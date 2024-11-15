@@ -25,8 +25,8 @@
 import { ref, onMounted, onUnmounted, watch } from "vue";
 
 const props = defineProps({
-  isSidebarOpen: Boolean, // Принимаем состояние из родителя
-  toggleSidebar: Function, // Принимаем функцию из родителя
+  isSidebarOpen: Boolean,
+  toggleSidebar: Function,
 });
 
 const sidebar = ref(null);

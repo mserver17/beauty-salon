@@ -1,30 +1,31 @@
+<!-- Сatalog.vue -->
 <template>
   <div class="catalog">
     <h2>Каталог услуг</h2>
     <div class="service_list">
       <div
-        v-for="service in services"
-        :key="service.id"
+        v-for="servicesGroup in servicesGroups"
+        :key="servicesGroup.id"
         class="service_list_card"
       >
         <div class="service_list_card_info">
           <router-link
-            :to="{ name: 'DetailedPage', params: { id: service.id } }"
+            :to="{ name: 'DetailedPage', params: { id: servicesGroup.id } }"
           >
-            <h3 class="service_name">{{ service.name }}</h3>
+            <h3 class="service_name">{{ servicesGroup.name }}</h3>
           </router-link>
-          <p class="service_desc">{{ service.description }}</p>
+          <p class="service_desc">{{ servicesGroup.description }}</p>
           <router-link
             class="card_link"
-            :to="{ name: 'DetailedPage', params: { id: service.id } }"
+            :to="{ name: 'DetailedPage', params: { id: servicesGroup.id } }"
           >
             Подробнее
           </router-link>
         </div>
         <div class="card_img_block">
           <img
-            :src="service.image"
-            alt="Image for {{ service.name }}"
+            :src="servicesGroup.image"
+            alt="Image for {{ servicesGroup.name }}"
             class="card_img"
           />
         </div>
@@ -34,15 +35,21 @@
 </template>
 
 <script setup>
-import { services } from "../data";
-console.log(services);
+import { onMounted, ref } from "vue";
+const servicesGroups = ref([]);
+onMounted(async () => {
+  const response = await fetch("/data/data.json");
+  const data = await response.json();
+
+  servicesGroups.value = data.servicesGroups;
+});
 </script>
 
 <style scoped>
 .catalog {
   margin: 0 auto;
-  padding: 20px 40px 20px 125px;
-  max-width: 1400px;
+  padding: 20px 40px 20px 40px;
+  max-width: 1200px;
 }
 .service_list {
   display: flex;
@@ -77,7 +84,7 @@ console.log(services);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.5s ease-in-out;
-  z-index: 0; /* изменено */
+  z-index: 0;
 }
 
 .service_list_card:hover::before {

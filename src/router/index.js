@@ -34,7 +34,6 @@ const routes = [
 ];
 
 const router = createRouter({
-  // Используйте import.meta.env.BASE_URL вместо process.env.BASE_URL
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });

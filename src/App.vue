@@ -13,7 +13,7 @@
 
   <button @click="toggleSidebar" class="toggle-button">
     <span class="material-symbols-outlined">
-      {{ isSidebarOpen ? "close" : "left_panel_open" }}
+      {{ isSidebarOpen ? "left_panel_close" : "left_panel_open" }}
     </span>
   </button>
 
@@ -70,7 +70,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import ToggleTheme from "./components/ToggleTheme.vue";
-import MyButton from "./components/ui/MyButton.vue";
+// import MyButton from "./components/ui/MyButton.vue";
 
 const isSidebarOpen = ref(true);
 const sidebar = ref(null);
@@ -79,7 +79,7 @@ const handle = ref(null);
 const resize = (e) => {
   if (sidebar.value && isSidebarOpen.value) {
     let newWidth = e.clientX - sidebar.value.offsetLeft;
-    if (newWidth < 54) newWidth = 54; // Минимальная ширина
+    if (newWidth < 54) newWidth = 54;
     sidebar.value.style.width = `${newWidth}px`;
   }
 };
@@ -125,7 +125,7 @@ button {
   top: 10px;
   left: 10px;
   color: var(--font-color);
-  z-index: 1000;
+  z-index: 10;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -142,10 +142,10 @@ button {
   padding-top: 50px;
   /* border-radius: 0px 24px 24px 0px; */
   background: var(--sidebar-bg-color);
-
   overflow: hidden;
   transition: width 0.3s ease;
   user-select: none;
+  z-index: 6;
 }
 
 .sidebar.closed {
@@ -202,19 +202,6 @@ button {
   margin-right: 34px;
 }
 
-.main-expanded {
-  margin-left: -50px;
-}
-
-main {
-  transition: margin-left 0.3s ease;
-  margin-left: 100px;
-}
-
-footer {
-  transition: margin-left 0.3s ease;
-  margin-left: 100px;
-}
 ul {
   list-style: none;
   color: white;

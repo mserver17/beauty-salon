@@ -8,6 +8,7 @@
       @input="$emit('update:modelValue', $event.target.value)"
       :placeholder="placeholder"
       :class="{ 'input-error': error }"
+      required
     />
     <span v-if="error" class="error-message">{{ errorMessage }}</span>
   </div>

@@ -1,18 +1,34 @@
+<!-- Auth.vue  -->
 <template>
   <div class="auth">
     <section>
       <div class="auth_form">
         <div class="login-card">
-          <h2>Login</h2>
-          <h3>Войдите чтобы иметь больше возможностей</h3>
-          <form class="login-form">
+          <h2>{{ isLogin ? "Вход" : "Регистрация" }}</h2>
+          <h3>
+            {{
+              isLogin
+                ? "Войдите чтобы иметь больше возможностей"
+                : "Создайте аккаунт для доступа"
+            }}
+          </h3>
+          <form class="login-form" @submit.prevent="handleSubmit">
             <MyInput
+              v-if="!isLogin"
               type="text"
+              placeholder="Your Name"
+              id="name"
+              label="Введите ваше имя"
+              :modelValue="nameValue"
+              @update:modelValue="updateName"
+            />
+            <MyInput
+              type="email"
               placeholder="example@gmail.com"
-              id="username"
-              label="Введите почту или имя пользователя"
-              :modelValue="usernameValue"
-              @update:modelValue="updateUsername"
+              id="email"
+              label="Введите почту"
+              :modelValue="emailValue"
+              @update:modelValue="updateEmail"
             />
             <MyInput
               id="password"
@@ -22,90 +38,140 @@
               type="password"
               placeholder="Password"
             />
-            <a href="https://website.com">Забыли пароль?</a>
-            <MyButton variant="primary" size="large" type="submit"
-              >Login</MyButton
-            >
+            <MyButton variant="primary" size="large" type="submit">
+              {{ isLogin ? "Login" : "Register" }}
+            </MyButton>
           </form>
+          <p>
+            {{ isLogin ? "Нет аккаунта?" : "Уже зарегистрированы?" }}
+            <a href="#" @click.prevent="toggleAuthMode">
+              {{ isLogin ? "Зарегистрироваться" : "Войти" }}
+            </a>
+          </p>
+          <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
         </div>
       </div>
     </section>
   </div>
 </template>
+
 <script setup>
 import { ref } from "vue";
 import MyButton from "../components/ui/MyButton.vue";
 import MyInput from "../components/ui/MyInput.vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
-const usernameValue = ref("");
+// const route = useRoute();
+const router = useRouter();
+const store = useStore();
+
+// Состояния формы
+const isLogin = ref(true);
+const nameValue = ref("");
+const emailValue = ref("");
 const passwordValue = ref("");
+const errorMessage = ref("");
 
-function updateUsername(value) {
-  usernameValue.value = value;
+// Функции для обновления значений
+function updateName(value) {
+  nameValue.value = value;
 }
-
+function updateEmail(value) {
+  emailValue.value = value;
+}
 function updatePassword(value) {
   passwordValue.value = value;
 }
+function toggleAuthMode() {
+  isLogin.value = !isLogin.value;
+  errorMessage.value = "";
+}
+function handleSubmit() {
+  if (isLogin.value) {
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const user = users.find(
+      (u) => u.email === emailValue.value && u.password === passwordValue.value
+    );
+
+    if (user) {
+      store.dispatch("auth/login", user);
+      router.push(localStorage.getItem("redirect") || "/booking");
+    } else {
+      errorMessage.value = "Неверный email или пароль";
+    }
+  } else {
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    if (!users.some((user) => user.email === emailValue.value)) {
+      const newUser = {
+        id: Date.now(),
+        name: nameValue.value,
+        email: emailValue.value,
+        password: passwordValue.value,
+      };
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+      store.dispatch("auth/login", newUser);
+      router.push("/booking");
+    } else {
+      errorMessage.value = "Пользователь с таким email уже зарегистрирован";
+    }
+  }
+}
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .auth {
   margin: 0 auto;
-  padding: 20px 40px 20px 125px;
-  max-width: 1400px;
-}
-section {
-  margin: 30px auto;
-}
-.auth_form {
-  margin: 30px auto;
-  width: 500px;
-}
-.login-card {
-  position: relative;
-  z-index: 3;
-  margin: 0 20px;
-  padding: 70px 30px 44px;
-  border-radius: 20px;
-  background-color: var(--bg-color);
+  padding: 20px 0px 20px 0px;
+  max-width: 1300px;
 
-  backdrop-filter: blur(10px);
-  text-align: center;
-  box-shadow: 10px 10px 20px 10px var(--header-shadow);
-}
-h2 {
-  color: var(--font-color);
-  font-size: 36px;
-  font-weight: 400;
-  margin: 0 0 12px;
-}
+  section {
+    margin: 0 auto;
 
-h3 {
-  color: var(--font-color);
-  margin: 0 0 48px;
-  font-weight: 400;
-  font-size: 16px;
-}
+    .auth_form {
+      margin: 30px auto;
+      max-width: 500px;
 
-.login-form {
-  width: 100%;
-  margin: 0;
-  display: grid;
-  gap: 16px;
-}
-/* input {
-  width: 300px;
-  height: 35px;
-  margin: 10px auto;
-  border: 1px solid #454343;
-  border-radius: 14px;
-  outline: none;
-  background-color: #484747;
-  font-size: 16px;
-  padding: 0 16px;
-} */
-input:focus {
-  outline: var(--color-primary);
+      .login-card {
+        position: relative;
+        z-index: 3;
+        margin: 0;
+        padding: 70px 30px 44px;
+        border: 1px solid var(--border-color);
+
+        border-radius: 20px;
+        background-color: var(--bg-color);
+        backdrop-filter: blur(10px);
+        text-align: center;
+        box-shadow: 10px 10px 20px 10px var(--header-shadow);
+
+        h2 {
+          color: var(--font-color);
+          font-size: 36px;
+          font-weight: 400;
+          margin: 0 0 12px;
+        }
+
+        h3 {
+          color: var(--font-color);
+          margin: 0 0 48px;
+          font-weight: 400;
+          font-size: 16px;
+        }
+
+        .login-form {
+          width: 100%;
+          margin: 0;
+          display: grid;
+          gap: 16px;
+        }
+        a {
+          color: #613dcb;
+          font-weight: bold;
+        }
+      }
+    }
+  }
 }
 </style>

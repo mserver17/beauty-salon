@@ -29,32 +29,38 @@
 [data-theme="light"] {
   --font-color: #242424;
   --bg-color: #ffffff;
+  --bg-color2: #ffbbe89e;
+  --bg-color-booking: #e3e3e3;
   --sidebar-bg-color: #ffffff;
   --sidebar-border-color: #ebebeb;
   --border-color: #ebebeb;
   --header-bg-color: #f0f0f0;
-  --footer-bg-color: #242424;
+  --header-border-color: #3c3c3c2d;
   --header-shadow: #00000017;
+  --footer-bg-color: #242424;
   --button-bg-color: #7163e2;
   --button-hover-color: #6d5fd2;
   --button-active-color: #7f71ee;
   --card-bg-color: #f9f9f939;
   --input-bg-color: #fafafa;
   --card-hover-color: #73737341;
-  --nav-btn-bg-hover: #4950f6;
-
-  --free-busy: #d1f5d3;
+  --nav-btn-bg-hover: #7163e2;
+  --free-busy: rgb(165, 255, 169);
+  --section-bg-color: #fafafa;
 }
 
 [data-theme="dark"] {
   --font-color: #ffffff;
   --bg-color: #242424;
+  --bg-color2: #195d6d36;
+  --bg-color-booking: #1f1f1f;
   --sidebar-bg-color: #242424;
   --sidebar-border-color: #363636;
   --border-color: #2e2e2ea2;
   --header-bg-color: #201f1f;
+  --header-shadow: #9e9e9e0f;
+  --header-border-color: #3e3e3ef6;
   --footer-bg-color: #1b1b1b;
-  --header-shadow: #ffffff0f;
   --button-bg-color: #006b83;
   --button-hover-color: #238ea6;
   --button-active-color: #3396ac;
@@ -63,6 +69,7 @@
   --card-hover-color: #1d3b42;
   --nav-btn-bg-hover: #055482;
   --free-busy: #007f9b;
+  --section-bg-color: #282828;
 }
 
 body {
@@ -99,6 +106,12 @@ a:hover {
   text-align: center;
 }
 header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 1480px;
+  width: 98%;
   height: 25px;
   text-align: center;
   padding: 10px 20px;
@@ -108,9 +121,20 @@ header {
   justify-content: end;
   align-items: center;
   box-shadow: 10px 10px 20px 10px var(--header-shadow);
-  border-bottom: 0.5px solid #b7aaaa80;
+  border-bottom: 0.5px solid var(--header-border-color);
   min-height: 5vh;
+  z-index: 5;
 }
+
+main {
+  margin-top: 50px;
+  transition: margin-left 0.3s ease;
+  margin-left: 220px;
+}
+.main-expanded {
+  margin-left: 0;
+}
+
 footer {
   height: 300px;
   margin-top: 40px;
@@ -119,7 +143,10 @@ footer {
   padding: 30px;
   align-items: center;
   justify-content: center;
+  transition: margin-left 0.3s ease;
+  margin-left: 100px;
 }
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

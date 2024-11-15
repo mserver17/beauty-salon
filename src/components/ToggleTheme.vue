@@ -30,8 +30,8 @@ onMounted(() => {
 }
 .toggle_theme_btn {
   display: flex;
-  flex-direction: column; /* Меняем на column для вертикального размещения */
-  align-items: center; /* Центрируем элементы по горизонтали */
+  flex-direction: column;
+  align-items: center;
   user-select: none;
 }
 </style>

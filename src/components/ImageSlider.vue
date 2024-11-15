@@ -45,7 +45,7 @@ const goToSlide = (index) => {
 };
 
 onMounted(() => {
-  slideInterval = setInterval(nextSlide, 3000); // Автопереключение каждые 3 сек
+  slideInterval = setInterval(nextSlide, 4000);
 });
 
 onUnmounted(() => {
@@ -57,7 +57,8 @@ onUnmounted(() => {
 .slider {
   position: relative;
   max-width: 1000px;
-  margin: auto;
+  height: 560px;
+  margin: 40px auto;
   overflow: hidden;
 }
 
