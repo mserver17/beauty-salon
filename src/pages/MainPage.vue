@@ -172,21 +172,21 @@ span {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 .feedback {
-  max-width: 600px;
+  max-width: 500px;
   margin: 0 auto;
+  padding: 1rem;
 }
 input,
 textarea {
-  width: 70%;
-  margin-left: 63px;
+  max-width: 500px;
+  width: auto;
   margin-bottom: 20px;
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
   outline: none;
   background-color: var(--input-bg-color);
-  max-width: 600px;
-  min-width: 360px;
+  min-width: 270px;
   min-height: 300px;
   color: var(--font-color);
 }

@@ -1,13 +1,12 @@
 // store/index.js
 import { createStore } from "vuex";
-import { auth } from "./auth";
-
-import catalog from "./catalog";
+import { auth } from "./modules/auth";
+import { bookings } from "./modules/bookings";
 
 const store = createStore({
   modules: {
     auth,
-    catalog,
+    bookings,
   },
 });
 

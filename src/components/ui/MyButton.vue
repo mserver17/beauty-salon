@@ -10,15 +10,13 @@
 </template>
 
 <script setup>
-// Определение входных параметров компонента
 const props = defineProps({
-  variant: { type: String, default: "primary" }, // Стиль кнопки ('primary', 'secondary' и т.д.)
-  size: { type: String, default: "medium" }, // Размер кнопки ('small', 'medium', 'large')
-  loading: { type: Boolean, default: false }, // Индикатор загрузки
-  disabled: { type: Boolean, default: false }, // Отключение кнопки
+  variant: { type: String, default: "primary" },
+  size: { type: String, default: "medium" },
+  loading: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
 });
 
-// Объявление события клика
 const emit = defineEmits(["click"]);
 
 const handleClick = (event) => {

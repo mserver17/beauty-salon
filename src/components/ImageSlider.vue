@@ -57,7 +57,7 @@ onUnmounted(() => {
 .slider {
   position: relative;
   max-width: 1000px;
-  height: 560px;
+  max-height: 560px;
   margin: 40px auto;
   overflow: hidden;
 }

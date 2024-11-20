@@ -32,11 +32,11 @@ const props = defineProps({
 const testimonialList = ref(null);
 
 const scrollLeft = () => {
-  testimonialList.value.scrollBy({ left: -250, behavior: "smooth" });
+  testimonialList.value.scrollBy({ left: -400, behavior: "smooth" });
 };
 
 const scrollRight = () => {
-  testimonialList.value.scrollBy({ left: 250, behavior: "smooth" });
+  testimonialList.value.scrollBy({ left: 400, behavior: "smooth" });
 };
 
 const handleWheelScroll = (event) => {

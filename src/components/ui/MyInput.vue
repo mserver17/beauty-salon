@@ -54,7 +54,7 @@ const props = defineProps({
 .custom-label {
   font-size: 14px;
   color: #5f5f5f;
-  display: block; /* Чтобы label отображался над input */
+  display: block;
   text-align: left;
   margin-left: 25px;
 }

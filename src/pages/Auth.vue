@@ -62,18 +62,15 @@ import MyInput from "../components/ui/MyInput.vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
-// const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
-// Состояния формы
 const isLogin = ref(true);
 const nameValue = ref("");
 const emailValue = ref("");
 const passwordValue = ref("");
 const errorMessage = ref("");
 
-// Функции для обновления значений
 function updateName(value) {
   nameValue.value = value;
 }

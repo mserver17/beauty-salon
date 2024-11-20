@@ -5,6 +5,9 @@ import store from "./store";
 import router from "./router";
 
 const app = createApp(App);
-app.use(store);
-app.use(router);
-app.mount("#app");
+if (store.state.auth.token && !store.state.auth.user) {
+  const user = JSON.parse(localStorage.getItem("user"));
+  store.commit("auth/setUser", user);
+}
+
+app.use(store).use(router).mount("#app");

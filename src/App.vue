@@ -3,11 +3,12 @@
     <router-link to="/booking" class="header_path_booking">
       Запись
     </router-link>
-    <router-link class="header_path_auth" to="/auth">
-      <span class="material-symbols-outlined header_link_auth"
-        >person</span
-      ></router-link
-    >
+    <router-link v-if="isAuthenticated" to="/profile" class="header_path_auth">
+      <span class="material-symbols-outlined"> manage_accounts </span>
+    </router-link>
+    <router-link v-else to="/auth" class="header_path_auth">
+      <span class="material-symbols-outlined header_link_auth">person</span>
+    </router-link>
     <ToggleTheme></ToggleTheme>
   </header>
 
@@ -32,8 +33,13 @@
         <span class="material-symbols-outlined">contact_phone</span>
         Записаться к нам
       </router-link>
-      <router-link to="/auth" class="sidebar-link">
-        <span class="material-symbols-outlined">person</span>
+
+      <router-link v-if="isAuthenticated" to="/profile" class="sidebar-link">
+        <span class="material-symbols-outlined"> manage_accounts </span>
+        Личный кабинет
+      </router-link>
+      <router-link v-else to="/auth" class="sidebar-link">
+        <span class="material-symbols-outlined header_link_auth">person</span>
         Вход/Регистрация
       </router-link>
     </nav>
@@ -68,13 +74,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useStore } from "vuex";
 import ToggleTheme from "./components/ToggleTheme.vue";
 // import MyButton from "./components/ui/MyButton.vue";
 
 const isSidebarOpen = ref(true);
 const sidebar = ref(null);
 const handle = ref(null);
+const store = useStore();
+const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
 
 const resize = (e) => {
   if (sidebar.value && isSidebarOpen.value) {

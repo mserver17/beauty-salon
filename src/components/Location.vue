@@ -5,22 +5,22 @@
   </section>
 </template>
 <script setup>
-import { onMounted } from "vue";
+// import { onMounted } from "vue";
 
-const initMap = () => {
-  const map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 55.7558, lng: 37.6173 },
-    zoom: 15,
-  });
-  const marker = new google.maps.marker.AdvancedMarkerElement({
-    position: { lat: 55.7558, lng: 37.6173 },
-    map: map,
-    title: "Наш салон",
-  });
-};
-onMounted(() => {
-  window.initMap = initMap;
-});
+// const initMap = () => {
+//   const map = new google.maps.Map(document.getElementById("map"), {
+//     center: { lat: 55.7558, lng: 37.6173 },
+//     zoom: 15,
+//   });
+//   const marker = new google.maps.marker.AdvancedMarkerElement({
+//     position: { lat: 55.7558, lng: 37.6173 },
+//     map: map,
+//     title: "Наш салон",
+//   });
+// };
+// onMounted(() => {
+//   window.initMap = initMap;
+// });
 </script>
 <style scoped>
 .location {
