@@ -1,8 +1,9 @@
-<!-- Сatalog.vue -->
 <template>
   <div class="catalog">
     <h2>Каталог услуг</h2>
-    <div class="service_list">
+    <div v-if = "isloading">Загрузка...</div>
+    <div v-else-if = "errorMessage">{{errorMessage}}</div>
+    <div v-else class="service_list">
       <div
         v-for="servicesGroup in servicesGroups"
         :key="servicesGroup.id"
@@ -25,8 +26,10 @@
         <div class="card_img_block">
           <img
             :src="servicesGroup.image"
+            @error="onImageError($event)"
             alt="Image for {{ servicesGroup.name }}"
             class="card_img"
+            loading="lazy"
           />
         </div>
       </div>
@@ -36,15 +39,37 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { getDatabase, ref as dbRef, get } from "firebase/database";
+import { firebaseApp } from "../firebaseConfig"; 
+
 const servicesGroups = ref([]);
+const isloading = ref(true)
+const errorMessage = ref("")
+
+const onImageError = (event) => {
+  event.target.src = "/public/img/placeholder_image.jpg"
+}
 onMounted(async () => {
-  const response = await fetch("/data/data.json");
-  const data = await response.json();
-
-  servicesGroups.value = data.servicesGroups;
-});
+  const db = getDatabase(firebaseApp); 
+  const servicesGroupsRef = dbRef(db, "servicesGroups"); 
+  try {
+    const snapshot = await get(servicesGroupsRef);
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      servicesGroups.value = Object.keys(data).map((key) => ({
+        id: key,
+        ...data[key],
+      }));
+    } else {
+      errorMessage.value("Данные отсутсвуют");
+    }
+  } catch (error) {
+    errorMessage.value("Ошибка при загрузке данных");
+  }finally{
+    isloading.value = false
+  }
+}); 
 </script>
-
 <style scoped>
 .catalog {
   margin: 0 auto;
@@ -66,7 +91,7 @@ onMounted(async () => {
   border-radius: 20px;
   padding: 16px 16px 30px 16px;
   margin-bottom: 16px;
-  position: relative; /* добавлено */
+  position: relative;
   z-index: 0;
   overflow: hidden;
   transition: background-color 2s ease;
@@ -90,6 +115,11 @@ onMounted(async () => {
 .service_list_card:hover::before {
   transform: scaleX(1);
 }
+.service_list_card:hover .card_img {
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+
 
 .service_list_card_info {
   padding-left: 50px;
@@ -128,4 +158,30 @@ onMounted(async () => {
   color: white;
   background-color: var(--button-hover-color);
 }
+
+@media (max-width: 768px) {
+  .catalog{
+    padding: 20px;
+  }
+  .service_list_card {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    padding: 15px;
+  }
+  .card_img_block{
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .service_list_card_info {
+    margin-bottom: 5px;
+    padding-left: 0;
+  }
+  .card_link {
+    padding: 10px 20px;
+  }
+  .service_desc {
+   font-size: 20px;
+}
+}
+
 </style>

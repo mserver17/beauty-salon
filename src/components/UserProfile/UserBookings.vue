@@ -1,17 +1,19 @@
 <template>
   <section class="records">
-    <h2>Мои записи</h2>
-    <div v-if="userBookings.length === 0" class="records__empty">
+    <div v-if="loading" class="loading-indicator">
+      <p>Загрузка...</p>
+    </div>
+    <div v-if="userBookings.length === 0 && !loading" class="records__empty">
       <p>У вас пока нет записей.</p>
-      <!-- <MyButton> -->
       <router-link to="/booking" class="link"> Записаться </router-link>
-      <!-- </MyButton> -->
     </div>
 
     <ul v-else class="records__list">
+    <h2>Мои записи</h2>
+
       <li
-        v-for="(booking, index) in userBookings"
-        :key="booking.date + booking.time + booking.master"
+        v-for="booking in userBookings"
+        :key="booking.id"
         class="records__list__item"
       >
         <div class="records__list__item__content">
@@ -33,58 +35,196 @@
           </div>
         </div>
         <div class="records__list__item__actions">
+          <span
+      v-if="booking.isUpdated"
+      class="updated-symbol"
+      title="Запись перенесена"
+    >
+      ⟲
+    </span>
+ 
           <MyButton
-            @click="rescheduleBooking(index)"
+            @click="openRescheduleModal(booking)"
             class="records__list__item__button"
           >
-            Перенести
+            Перенести запись
           </MyButton>
+
           <MyButton
-            @click="cancelBooking(index)"
+            @click="openDeleteModal(booking.id)"
             class="records__list__item__button"
           >
-            Отменить
+            Отменить запись
           </MyButton>
         </div>
       </li>
     </ul>
+    <DinamicDialog
+      v-if="showRescheduleModal"
+      :visible="showRescheduleModal"
+      title="Перенос записи"
+      message="Пожалуйста, выберите новую дату и время для переноса записи."
+      @close="closeRescheduleModal"
+      :buttons="[
+        {
+          label: 'Подтвердить',
+          class: 'btn-primary',
+          handler: confirmReschedule,
+        },
+        {
+          label: 'Отмена',
+          class: 'btn-secondary',
+          handler: closeRescheduleModal,
+        },
+      ]"
+    >
+      <template #default>
+        <div>
+          <MyInput
+            type="date"
+            id="date"
+            v-model="newDate"
+            label="Выберите желаемую дату"
+          />
+          <br />
+          <MyInput
+            type="time"
+            id="time"
+            v-model="newTime"
+            label="Выберите время"
+          />
+        </div>
+      </template>
+    </DinamicDialog>
+    <DinamicDialog
+      v-if="showDeleteModal"
+      :visible="showDeleteModal"
+      title="Вы уверены, что хотите отменить запись?"
+      :message="'Это действие необратимо. Подтвердите отмену записи.'"
+      :buttons="[
+        { label: 'Да, отменить', class: 'btn-danger', handler: confirmDelete },
+        {
+          label: 'Оставить',
+          class: 'btn-secondary',
+          handler: closeDeleteModal,
+        },
+      ]"
+      @close="closeDeleteModal"
+    />
+    <CustomAlert
+    v-if="customAlertVisible"
+    :message="customAlertMessage"
+    :type="customAlertType"
+    @close="customAlertVisible = false"
+  />
   </section>
 </template>
+
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import MyButton from "../ui/MyButton.vue";
+import DinamicDialog from "../ui/DynamicDialog.vue";
+import MyInput from "../ui/MyInput.vue";
+import { onMounted } from "vue";
+import CustomAlert from "../ui/CustomAlert.vue";
 
 const store = useStore();
 const userBookings = computed(() => store.getters["bookings/userBookings"]);
+const loading = ref(true); 
+const showDeleteModal = ref(false);
+const bookingToDeleteId = ref(null);
 
-function rescheduleBooking(index) {
-  const currentBooking = userBookings.value[index];
-  const newDate = prompt(
-    `Введите новую дату для записи: "${currentBooking.service}" (формат: ГГГГ-ММ-ДД)`,
-    currentBooking.date
-  );
-  const newTime = prompt(
-    `Введите новое время для записи: "${currentBooking.service}" (формат: ЧЧ:ММ)`,
-    currentBooking.time
-  );
+const showRescheduleModal = ref(false);
+const bookingToReschedule = ref(null);
+const newDate = ref("");
+const newTime = ref("");
 
-  if (newDate && newTime) {
-    store.dispatch("bookings/updateBooking", { index, newDate, newTime });
-    alert("Запись успешно перенесена!");
-  } else {
-    alert("Перенос записи отменён.");
-  }
+const customAlertVisible = ref(false);
+const customAlertMessage = ref("");
+const customAlertType = ref("success");
+
+onMounted(() => {
+  store.dispatch("bookings/loadBookings").finally(() => {
+    loading.value = false; 
+  });
+});
+
+function showCustomAlert(message, type = "success") {
+  customAlertMessage.value = message;
+  customAlertType.value = type;
+  customAlertVisible.value = true;
+  setTimeout(() => {
+    customAlertVisible.value = false;
+  }, 5000); 
 }
 
-function cancelBooking(index) {
-  store.dispatch("bookings/deleteBooking", index);
+function openRescheduleModal(booking) {
+  if (!booking || !booking.id) {
+    console.error("Ошибка: переданы некорректные данные записи:", booking);
+    alert("Ошибка: данные о записи отсутствуют.");
+    return;
+  }
+  bookingToReschedule.value = booking;
+  newDate.value = booking.date || "";
+  newTime.value = booking.time || "";
+  showRescheduleModal.value = true;
+}
+function closeRescheduleModal() {
+  showRescheduleModal.value = false;
+  bookingToReschedule.value = null;
+  newDate.value = "";
+  newTime.value = "";
+}
+function confirmReschedule() {
+  if (!newDate.value || !newTime.value) {
+    showCustomAlert("Пожалуйста, укажите дату и время.", "error");
+    return;
+  }
+
+  if (
+    newDate.value === bookingToReschedule.value.date &&
+    newTime.value === bookingToReschedule.value.time
+  ) {
+    showCustomAlert("Новые данные записи совпадают с текущими. Выберите новую дату и/или время", "error");
+    return;
+  }
+
+  store
+    .dispatch("bookings/updateBooking", {
+      id: bookingToReschedule.value.id,
+      newDate: newDate.value,
+      newTime: newTime.value,
+    })
+    .then(() => {
+      showCustomAlert("Запись успешно перенесена!");
+    })
+    .catch((error) => {
+      console.error("Ошибка при переносе записи:", error.message);
+      showCustomAlert("Не удалось перенести запись. Попробуйте позже.", "error");
+    });
+
+  closeRescheduleModal();
+}
+
+
+function openDeleteModal(id) {
+  console.log("Открываем модал для ID:", id);
+  bookingToDeleteId.value = id;
+  showDeleteModal.value = true;
+}
+function closeDeleteModal() {
+  bookingToDeleteId.value = null;
+  showDeleteModal.value = false;
+}
+function confirmDelete() {
+  console.log("Удаляем запись с ID:", bookingToDeleteId.value);
+  store.dispatch("bookings/deleteBooking", bookingToDeleteId.value);
+  closeDeleteModal();
 }
 </script>
-
 <style lang="scss" scoped>
 .records {
-  // margin: 40px auto;
   margin-left: 40px;
   text-align: center;
   width: 40%;
@@ -104,19 +244,18 @@ function cancelBooking(index) {
       }
     }
   }
-
   h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 1px;
   }
-
   &__list {
     margin: 0 auto;
     padding: 20px;
     width: 100%;
     max-width: 800px;
+    min-width: 500px;
     list-style: none;
     // background-color: var(--section-bg-color);
     border-radius: 16px;
@@ -156,6 +295,7 @@ function cancelBooking(index) {
           flex-direction: column;
           align-items: flex-start;
           flex: 1;
+          margin-left: 20px;
 
           span {
             color: var(--span-color);
@@ -184,6 +324,17 @@ function cancelBooking(index) {
         display: flex;
         justify-content: flex-end;
         gap: 10px;
+
+        .updated-symbol {
+          font-size: 20px;
+          color: #28a745; 
+          margin-left: 10px;
+          cursor: help; 
+        }
+        .updated-symbol:hover {
+          color: #218838; 
+        }
+
       }
 
       &__button {
@@ -209,6 +360,63 @@ function cancelBooking(index) {
             background-color: #c0392b;
           }
         }
+      }
+    }
+  }
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    &__content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px;
+
+      &__actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 15px;
+      }
+      .modal-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+.btn-transferring {
+  background-color: #4751dd;
+}
+
+@media screen and (max-width: 768px) {
+  .records {
+    width: 100%;
+    margin-left: 0;
+    &__list {
+      min-width: 350px;
+      max-width: 450px;
+      padding: 10px;
+
+      &__item {
+        padding: 5px 5px 15px 5px;
+
+      &__content{
+        &__field{
+          margin-left: 5px;
+
+        }
+      }
       }
     }
   }

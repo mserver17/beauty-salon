@@ -5,10 +5,11 @@
       <span v-if="theme === 'light'" class="material-symbols-outlined">
         toggle_on
       </span>
-      <span v-else class="material-symbols-outlined"> toggle_off </span>
+      <span v-else class="material-symbols-outlined">toggle_off</span>
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from "vue";
 
@@ -17,12 +18,18 @@ const theme = ref("light");
 const toggleTheme = () => {
   theme.value = theme.value === "light" ? "dark" : "light";
   document.documentElement.setAttribute("data-theme", theme.value);
+  localStorage.setItem("theme", theme.value); 
 };
 
 onMounted(() => {
-  document.documentElement.setAttribute("data-theme", theme.value);
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    theme.value = savedTheme;
+    document.documentElement.setAttribute("data-theme", theme.value);
+  }
 });
 </script>
+
 <style scoped>
 .toggle_theme {
   margin-left: 34px;

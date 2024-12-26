@@ -58,7 +58,7 @@ onUnmounted(() => {
 <style>
 .testimonials {
   background-color: var(--section-bg-color);
-  max-width: 1000px;
+  max-width: 12000px;
   margin-top: 40px 0 40px 0;
   margin: 0 auto;
   padding: 20px;
@@ -87,13 +87,20 @@ onUnmounted(() => {
 
 .review-item {
   min-width: 250px;
+  max-width: 300px;
   flex-shrink: 0;
   padding: 15px;
   background: var(--border-color);
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
+blockquote{
+  text-align: left;
 
+}
 .scroll-button {
   background-color: #835ac1;
   color: #fff;

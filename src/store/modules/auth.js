@@ -1,80 +1,133 @@
-// store/modules/auth.js
-import router from "../../router";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signOut,
+} from "firebase/auth";
+import { firebaseAuth } from "../../firebaseConfig";
 
 export const auth = {
-  namespaced: true,
+ namespaced: true, 
   state: () => ({
-    user: JSON.parse(localStorage.getItem("user")) || null,
-    token: localStorage.getItem("token"),
+    user: null,
+    token: null,
+    isAuthenticated: false, 
   }),
   mutations: {
     setUser(state, user) {
       state.user = user;
-      localStorage.setItem("user", JSON.stringify(user));
+    },
+    setAuthenticated(state, status) {
+      state.isAuthenticated = status;
     },
     setToken(state, token) {
       state.token = token;
-      localStorage.setItem("token", token);
     },
-    logout(state) {
+    clearAuthData(state) {
       state.user = null;
       state.token = null;
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
+      state.isAuthenticated = false; 
     },
-    updateUser(state, { name, email, password }) {
-      if (name) state.user.name = name;
-      if (email) state.user.email = email;
-      if (password) state.user.password = password;
-      localStorage.setItem("user", JSON.stringify(state.user));
-      console.log("Данные пользователя сохранены в localStorage:", state.user);
+    updateUser(state, { name, photo }) {
+      if (state.user) {
+        if (name) state.user.name = name;
+        if (photo) state.user.photo = photo;
+      }
     },
   },
   actions: {
-    async login({ commit }, userData) {
-      commit("setUser", {
-        ...JSON.parse(localStorage.getItem("user")),
-        ...userData,
-      });
-      commit("setToken", userData.token);
-      await router.push("/profile");
-    },
-    logout({ commit }) {
-      commit("logout");
-      router.push("/auth");
-    },
-    verifyPassword({ state }, currentPassword) {
-      console.log("Проверяем пароль:", currentPassword, state.user?.password);
-      return Promise.resolve(state.user?.password === currentPassword);
-    },
-    async updateUser(
-      { commit, dispatch },
-      { name, email, newPassword, currentPassword }
-    ) {
-      console.log("Переданные данные для обновления:", {
-        name,
-        email,
-        newPassword,
-        currentPassword,
-      });
+    async login({ commit }, { email, password }) {
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          firebaseAuth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+    
+        commit("setUser", {
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+        });
+        const token = await user.getIdToken();
+        commit("setToken", token);
+        commit("setAuthenticated", true);
 
-      const isPasswordCorrect = await dispatch(
-        "verifyPassword",
-        currentPassword
-      );
+        localStorage.setItem("user", JSON.stringify({
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+        }));
+        localStorage.setItem("token", token);
+        localStorage.setItem("isAuthenticated", true);
+      }  catch (error) {
+        throw {
+          code: error.code || "auth/unknown-error",
+          message: error.message || "Произошла ошибка авторизации.",
+        };
+      }
+      
+    }
+    ,
+    async register({ commit }, { email, password, name }) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          firebaseAuth,
+          email,
+          password
+        );
+        const user = userCredential.user;
 
-      if (!isPasswordCorrect) {
-        console.error("Ошибка: неверный текущий пароль");
-        throw new Error("Неверный текущий пароль");
+        await updateProfile(user, { displayName: name });
+
+        commit("setUser", {
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+        });
+        commit("setToken", await user.getIdToken());
+        commit("setAuthenticated", true);
+      } catch (error) {
+        throw {
+          code: error.code || "auth/unknown-error",
+          message: error.message || "Произошла ошибка авторизации.",
+        };
+      }
+      
+
+    },
+    async logout({ commit }) {
+      await signOut(firebaseAuth);
+      commit("clearAuthData");
+    },
+    initializeAuth({ commit }) {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = localStorage.getItem("token");
+      const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
+  
+      if (user && token && isAuthenticated) {
+        commit("setUser", user);
+        commit("setToken", token);
+        commit("setAuthenticated", isAuthenticated);
+      }
+    },
+    async updateUser({ state, commit }, { name, photo }) {
+      const user = firebaseAuth.currentUser;
+
+      if (!user) {
+        throw new Error("Пользователь не авторизован");
       }
 
-      commit("updateUser", { name, email, password: newPassword });
-      console.log("Данные успешно обновлены");
+      await updateProfile(user, { displayName: name, photoURL: photo });
+      commit("setUser", { ...state.user, name, photo });
     },
   },
   getters: {
-    isAuthenticated: (state) => !!state.token,
-    userName: (state) => state.user?.name || "",
-    userEmail: (state) => state.user?.email || "",
+    isAuthenticated: (state) => state.isAuthenticated,
+    userName: (state) =>
+      state.user?.name || firebaseAuth.currentUser?.displayName || "",
+    userEmail: (state) =>
+      state.user?.email || firebaseAuth.currentUser?.email || "",
   },
 };

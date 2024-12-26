@@ -19,30 +19,40 @@
   </button>
 
   <aside :class="['sidebar', { closed: !isSidebarOpen }]" ref="sidebar">
-    <div id="handle" class="handle"></div>
     <nav>
-      <router-link to="/" class="sidebar-link">
+      <router-link to="/" class="sidebar__link">
         <span class="material-symbols-outlined">home</span>
         Главная
       </router-link>
-      <router-link to="/catalog" class="sidebar-link">
+      <router-link to="/catalog" class="sidebar__link">
         <span class="material-symbols-outlined">apps</span>
         Каталог услуг
       </router-link>
-      <router-link to="/booking" class="sidebar-link">
+      <router-link to="/booking" class="sidebar__link">
         <span class="material-symbols-outlined">contact_phone</span>
         Записаться к нам
       </router-link>
 
-      <router-link v-if="isAuthenticated" to="/profile" class="sidebar-link">
+      <router-link v-if="isAuthenticated" to="/profile" class="sidebar__link">
         <span class="material-symbols-outlined"> manage_accounts </span>
         Личный кабинет
       </router-link>
-      <router-link v-else to="/auth" class="sidebar-link">
+      <router-link v-else to="/auth" class="sidebar__link">
         <span class="material-symbols-outlined header_link_auth">person</span>
         Вход/Регистрация
       </router-link>
+        <a class="sidebar__link" href="/data/data.json" target="_blank"> 
+        <span class="material-symbols-outlined">file_copy</span>
+        JSON
+        </a>
     </nav>
+    <router-link to="/profile" class="user-info" v-if="isAuthenticated">
+      <img :src="userPhoto" alt="User avatar" class="user-info__avatar" />
+      <div v-if="!isMinimized" class="user-info__details">
+        <p class="user-info__details__name">{{ user.name }}</p>
+        <p class="user-info__details__email">{{ truncatedEmail }}</p>
+      </div>
+    </router-link>
   </aside>
 
   <main :class="{ 'main-expanded': !isSidebarOpen }">
@@ -54,18 +64,10 @@
       <ul>
         <li>Ссылки на резурсы</li>
         <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
       </ul>
     </div>
     <div>
       <ul>
-        <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
         <li>Ссылки на резурсы</li>
         <li>Ссылки на резурсы</li>
       </ul>
@@ -74,53 +76,70 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import ToggleTheme from "./components/ToggleTheme.vue";
-// import MyButton from "./components/ui/MyButton.vue";
 
 const isSidebarOpen = ref(true);
-const sidebar = ref(null);
-const handle = ref(null);
+const isMinimized = ref(false);
 const store = useStore();
+store.dispatch('auth/initializeAuth');
+
 const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
+const user = computed(() => store.state.auth.user);
+const userPhoto = computed(() => user.value.photo || "/img/undraw_female-avatar_7t6k.svg");
 
-const resize = (e) => {
-  if (sidebar.value && isSidebarOpen.value) {
-    let newWidth = e.clientX - sidebar.value.offsetLeft;
-    if (newWidth < 54) newWidth = 54;
-    sidebar.value.style.width = `${newWidth}px`;
-  }
-};
-
-const stopResize = () => {
-  window.removeEventListener("mousemove", resize);
-  window.removeEventListener("mouseup", stopResize);
-};
-
-const initResize = () => {
-  window.addEventListener("mousemove", resize);
-  window.addEventListener("mouseup", stopResize);
-};
+const truncatedEmail = computed(() => {
+  const email = user.value.email || '';
+  const [local, domain] = email.split('@');
+  const truncatedLocal = local.length > 7 ? local.slice(0, 7) + '...' : local;
+  return `${truncatedLocal}@${domain}`;
+});
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 };
 
 onMounted(() => {
-  if (handle.value) {
-    handle.value.addEventListener("mousedown", initResize);
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    document.documentElement.setAttribute("data-theme", savedTheme);
   }
 });
 
-onUnmounted(() => {
-  if (handle.value) {
-    handle.value.removeEventListener("mousedown", initResize);
-  }
-});
+onUnmounted(() => {});
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+header {
+  position: sticky;
+  box-sizing: content-box;
+  top: 0;
+  // left: 50%;
+  max-width: 100%;
+  height: 45px;
+  text-align: center;
+  padding: 5px 20px;
+  background-color: var(--header-bg-color);
+  color: var(--font-color);
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  box-shadow: 10px 10px 20px 10px var(--header-shadow);
+  border-bottom: 0.5px solid var(--header-border-color);
+  // min-height: 5vh;
+  z-index: 5;
+
+  .header_path_auth {
+    color: var(--font-color);
+  }
+  .header_path_booking {
+    color: white;
+    background-color: var(--button-bg-color);
+    padding: 5px 20px;
+    margin-right: 40px;
+  }
+}
 button {
   background: transparent;
   border: 0;
@@ -131,7 +150,7 @@ button {
 
 .toggle-button {
   position: fixed;
-  top: 10px;
+  top: 0px;
   left: 10px;
   color: var(--font-color);
   z-index: 10;
@@ -155,64 +174,113 @@ button {
   transition: width 0.3s ease;
   user-select: none;
   z-index: 6;
-}
-
-.sidebar.closed {
-  width: 0;
-  overflow: hidden;
-}
-
-.handle {
-  position: absolute;
-  z-index: 100;
-  width: 8px;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  transition: 0.3s;
-}
-
-.handle:hover,
-.handle:active {
-  background: #f7f7f7;
-  cursor: col-resize;
-}
-
-.sidebar-link {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &.closed {
+    width: 0;
+    overflow: hidden;
+  }
+  &__link {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    height: 50px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--font-color);
+    text-decoration: none;
+
+    &:hover {
+      background: var(--nav-btn-bg-hover);
+      color: #f7f7f7;
+    }
+    .material-symbols-outlined {
+      font-size: 30px;
+    }
+  }
+}
+
+.user-info {
+  display: flex;
   align-items: center;
-  height: 50px;
-  padding: 0 16px;
-  font-size: 16px;
-  font-weight: 400;
-  color: var(--font-color);
+  padding: 10px 16px;
   text-decoration: none;
+  border-radius: 8px;
+  margin: 0 auto 5px;
+  border: 1px solid transparent;
+
+  &__avatar {
+    margin-right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+  &__details {
+    text-align: left;
+    margin-left: 10px;
+
+    p {
+      margin: 0;
+    }
+
+    &__name {
+      color: var(--font-color);
+      font-weight: 500;
+    }
+
+    &__email {
+      font-size: 14px;
+      color: #4e4e4e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
+      display: block;
+    }
+  }
+
+  &:hover {
+    background-color: rgba(148, 119, 255, 0.157);
+    border: 1px solid #533dd5;
+    box-shadow: 0 0 5px rgba(81, 0, 255, 0.5);
+  }
 }
 
-.sidebar-link:hover {
-  background: var(--nav-btn-bg-hover);
-  color: #f7f7f7;
+main {
+  margin-top: 50px;
+  transition: margin-left 0.3s ease;
+  margin-left: 220px;
+}
+.main-expanded {
+  margin-left: 0;
 }
 
-.material-symbols-outlined {
-  font-size: 30px;
+@media screen and (max-width: 668px) {
+  main {
+    margin-top: 50px;
+    transition: margin-left 0.3s ease;
+    margin-left: 0px;
+  }
+  .main-expanded {
+    margin-left: 0;
+  }
+  footer {
+    margin-left: 0px;
+  }
 }
-.header_path_auth {
-  color: var(--font-color);
-}
-.header_path_booking {
-  color: white;
-  background-color: var(--button-bg-color);
-  padding: 5px 20px;
-  margin-right: 40px;
-}
-button {
-  margin-right: 34px;
-}
-
-ul {
-  list-style: none;
-  color: white;
+footer {
+  height: 300px;
+  margin-top: 40px;
+  background-color: var(--footer-bg-color);
+  display: flex;
+  padding: 30px;
+  align-items: center;
+  justify-content: center;
+  transition: margin-left 0.3s ease;
+  margin-left: 100px;
 }
 </style>

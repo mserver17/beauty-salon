@@ -1,7 +1,7 @@
 <template>
   <div class="ProfileContainer">
     <div class="profile">
-      <h1>Личный кабинет</h1>
+      <h2>Личный кабинет</h2>
       <div class="profile_card">
         <div class="profile_card__img">
           <img :src="userPhoto" alt="user-photo" /> <br />
@@ -29,10 +29,25 @@
             {{ section }}
           </li>
         </ul>
-        <button class="leave_btn" @click="logout">
+        <button class="leave_btn" @click="openLogoutModal">
           <span class="material-symbols-outlined"> logout </span>
           Выйти
         </button>
+        <DinamicDialog
+      v-if="showLogoutModal"
+      :visible="showLogoutModal"
+      title="Вы уверены, что хотите выйти из профиля?"
+      :message="'Чтобы получить доступ к своим записям вам необходимо будет заново зайти в профиль'"
+      :buttons="[
+        { label: 'Да, выйти', class: 'btn-danger', handler: logout },
+        {
+          label: 'Остаться',
+          class: 'btn-secondary',
+          handler: closeLogoutModal,
+        },
+      ]"
+      @close="closeLogoutModal"
+    />
       </div>
     </div>
     <transition
@@ -55,6 +70,7 @@ import UserBookings from "../components/UserProfile/UserBookings.vue";
 import UserVisitHistory from "../components/UserProfile/UserVisitHistory.vue";
 import UserSettings from "../components/UserProfile/UserSettings.vue";
 import UserTestimotionals from "../components/UserProfile/UserTestimotionals.vue";
+import DinamicDialog from "../components/ui/DynamicDialog.vue"
 
 const store = useStore();
 const router = useRouter();
@@ -62,6 +78,7 @@ const router = useRouter();
 const user = computed(() => store.state.auth.user);
 const activeSection = ref("bookings");
 const showSection = ref(true);
+const showLogoutModal = ref(false);
 
 const sectionComponents = {
   bookings: UserBookings,
@@ -80,7 +97,6 @@ const sectionLabels = {
 const activeSectionComponent = computed(
   () => sectionComponents[activeSection.value]
 );
-// анимации
 const setActiveSection = (section) => {
   if (activeSection.value === section) return;
   showSection.value = false;
@@ -89,34 +105,39 @@ const setActiveSection = (section) => {
     showSection.value = true;
   }, 300);
 };
-
-const userPhoto = ref(getUserPhoto(user.value));
-
-function getUserPhoto(user) {
-  if (!user) return "/img/default-photo.png";
-  const userProfile = JSON.parse(localStorage.getItem(`user_${user.id}`)) || {};
-  return userProfile.photo || "/img/default-photo.png";
-}
+const userPhoto = computed(() => {
+  return user.value?.photo || "/img/undraw_female-avatar_7t6k.svg";
+});
 
 const uploadPhoto = (event) => {
   const file = event.target.files[0];
   if (file && user.value) {
     const reader = new FileReader();
     reader.onload = () => {
-      const userProfileKey = `user_${user.value.id}`;
-      const userProfile =
-        JSON.parse(localStorage.getItem(userProfileKey)) || {};
-      userProfile.photo = reader.result;
-      localStorage.setItem(userProfileKey, JSON.stringify(userProfile));
-      userPhoto.value = userProfile.photo;
+      const photoDataUrl = reader.result; 
+      store.commit("auth/updateUser", {
+        photo: photoDataUrl,
+      });
     };
     reader.readAsDataURL(file);
   }
 };
 
+function openLogoutModal() {
+  console.log("Попытка выхода",);
+  showLogoutModal.value = true;
+}
+function closeLogoutModal() {
+  console.log("Передумал(а) выходить",);
+  showLogoutModal.value = false;
+}
+
 function logout() {
-  store.dispatch("auth/logout");
-  router.push("/");
+  console.log("Выход из профиля",);
+    store.dispatch("auth/logout");
+    router.push("/");
+  closeLogoutModal();
+
 }
 function onBeforeLeave() {
   showSection.value = false;
@@ -125,6 +146,7 @@ function onBeforeLeave() {
 function onAfterLeave() {
   showSection.value = true;
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -147,6 +169,11 @@ function onAfterLeave() {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.5s ease;
 
+    h2 {
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
     .profile_card {
       &__img {
         border-radius: 200px;
@@ -155,6 +182,7 @@ function onAfterLeave() {
         background-color: var(--border-color);
         margin: 0px auto;
         margin-bottom: 60px;
+        
 
         img {
           border-radius: 200px;
@@ -199,7 +227,11 @@ function onAfterLeave() {
         }
       }
       .leave_btn {
-        margin: 12px auto;
+        margin: 30px auto 10px 30px;
+        color: red;
+        background-color: var(--alert-error-bg-color);
+        border: 1px solid var(--alert-error-btn-border);
+        padding: 3px 8px;
         display: flex;
         gap: 10px;
         align-items: center;
@@ -207,7 +239,7 @@ function onAfterLeave() {
     }
   }
 }
-/* Анимация записей */
+
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: all 0.3s ease;
@@ -231,5 +263,48 @@ function onAfterLeave() {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateX(-20px);
+}
+
+@media screen and (max-width: 768px) {
+  .ProfileContainer {
+    flex-direction: column; 
+    padding: 10px; 
+
+    .profile {
+      min-width: unset;
+      width: 100%; 
+      margin-bottom: 20px; 
+      padding: 10px;
+    }
+
+    .profile_card {
+      &__img {
+        height: 120px;
+        width: 120px;
+
+        img {
+          height: 120px;
+          width: 120px;
+        }
+      }
+
+      &__items {
+        font-size: 16px;
+        li {
+          padding: 8px; 
+        }
+      }
+
+      .leave_btn {
+        gap: 5px;
+        width: 40%;
+        justify-content: center;
+      }
+    }
+
+    h2 {
+      font-size: 24px;
+    }
+  }
 }
 </style>

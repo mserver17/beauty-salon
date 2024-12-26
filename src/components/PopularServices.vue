@@ -22,7 +22,7 @@
             >Записаться</MyButton
           >
         </div>
-      </li>
+      </li> 
     </ul>
     <AuthDialog
       :visible="showAuthModal"
@@ -71,11 +71,15 @@ function bookService(serviceId) {
 </script>
 <style lang="scss" scoped>
 .popular-services {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 40px auto;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  max-width: 900px;
   padding: 20px;
 
   h2 {

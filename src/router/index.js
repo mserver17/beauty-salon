@@ -1,4 +1,3 @@
-// router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 import MainPage from "../pages/MainPage.vue";
 import Catalog from "../pages/Catalog.vue";
@@ -22,7 +21,7 @@ const routes = [
     path: "/catalog/:id",
     name: "DetailedPage",
     component: DetailedPage,
-    props: (route) => ({ id: Number(route.params.id) }), // Преобразуем id в число
+    props: (route) => ({ id: Number(route.params.id) }),
   },
   {
     path: "/booking",
@@ -48,11 +47,16 @@ const router = createRouter({
 });
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem("token");
+  console.log("Is Authenticated:", isAuthenticated); 
+  console.log("Target route:", to.path);
+
   if (to.meta.requiresAuth && !isAuthenticated) {
+    console.log("Redirecting to /auth");
     next("/auth");
   } else {
     next();
   }
 });
+
 
 export default router;

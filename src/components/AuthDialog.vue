@@ -42,6 +42,7 @@ const closeDialog = () => {
 
 <style lang="scss" scoped>
 .auth-dialog {
+  overflow: hidden;
   position: fixed;
   top: 0;
   left: 0;
@@ -58,7 +59,7 @@ const closeDialog = () => {
     background-color: var(--bg-color);
     padding: 20px;
     width: 30rem;
-    height: 12rem;
+    height: 15rem;
     border-radius: 8px;
     text-align: center;
     p {

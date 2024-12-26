@@ -16,48 +16,17 @@
     <ImageSlider :images="sliderImages" />
     <Testimonials :testimonials="testimonials" />
     <Location />
-    <section class="feedback">
-      <h2>Контактная форма</h2>
-      <form @submit.prevent="submitContactForm">
-        <MyInput
-          id="username"
-          label="Введите имя"
-          v-model="contactForm.name"
-          placeholder="Ваше имя"
-          required
-        />
-        <MyInput
-          id="username"
-          label="Введите почту"
-          v-model="contactForm.email"
-          placeholder="example@gmail.com"
-          type="email"
-          required
-        />
-        <div class="textaria">
-          <label for="feedback">Текст сообщения</label>
-          <textarea
-            id="feedback"
-            v-model="contactForm.message"
-            placeholder="Ваше сообщение"
-            required
-          ></textarea>
-        </div>
-        <MyButton type="submit">Отправить</MyButton>
-      </form>
-    </section>
+    <Feedback/>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import MyInput from "../components/ui/MyInput.vue";
-import MyButton from "../components/ui/MyButton.vue";
 import ImageSlider from "../components/ImageSlider.vue";
 import Testimonials from "../components/Testimonials.vue";
 import PopularServices from "../components/PopularServices.vue";
 import Location from "../components/Location.vue";
-
+import Feedback from "../components/Feedback.vue";
 const sliderImages = ref([
   "/img/slider-2.jpg",
   "https://novosibirsk.bonodono.ru/upload/iblock/638/yg38k6m60vone5joiecsjnbtvi7oexqw.jpg",
@@ -77,26 +46,6 @@ onMounted(async () => {
   testimonials.value = data.testimonials;
 });
 
-// const newTestimonial = ref("");
-// const addTestimonial = () => {
-//   testimonials.value.push({
-//     id: testimonials.value.length + 1,
-//     text: newTestimonial.value,
-//     author: "Неизвестный",
-//   });
-//   newTestimonial.value = "";
-// };
-
-const contactForm = ref({
-  name: "",
-  email: "",
-  message: "",
-});
-
-const submitContactForm = () => {
-  console.log(contactForm.value);
-  contactForm.value = { name: "", email: "", message: "" };
-};
 </script>
 
 <style scoped>
@@ -115,7 +64,7 @@ section {
 .image__container {
   margin: 0;
   width: 100%;
-  height: 650px;
+  height: 750px;
 }
 
 .image__underflow {
@@ -164,38 +113,7 @@ span {
   padding: 10px 20px;
   margin-left: 40px;
 }
-.feedback {
-  margin-top: 40px;
-  padding: 20px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-.feedback {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-input,
-textarea {
-  max-width: 500px;
-  width: auto;
-  margin-bottom: 20px;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  outline: none;
-  background-color: var(--input-bg-color);
-  min-width: 270px;
-  min-height: 300px;
-  color: var(--font-color);
-}
-.textaria {
-  display: flex;
-  flex-direction: column;
-  align-items: first baseline;
-  padding-left: 25px;
-}
+
 button {
   cursor: pointer;
 }

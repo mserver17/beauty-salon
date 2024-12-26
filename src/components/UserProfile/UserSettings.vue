@@ -1,9 +1,8 @@
 <template>
   <section class="settings">
     <h2>Настройки</h2>
-    <form @submit.prevent="updateSettings" class="settings-form">
+    <form @submit.prevent="updateSettings" class="settings__form">
       <div>
-        <!-- <label for="name">Имя:</label> -->
         <MyInput
           label="Измените имя"
           id="name"
@@ -12,7 +11,6 @@
         />
       </div>
       <div>
-        <!-- <label for="email">Email:</label> -->
         <MyInput
           id="email"
           label="Измените почту"
@@ -22,7 +20,6 @@
         />
       </div>
       <div>
-        <!-- <label for="currentPassword">Текущий пароль:</label> -->
         <MyInput
           label="Tекущий пароль"
           id="currentPassword"
@@ -32,7 +29,6 @@
         />
       </div>
       <div>
-        <!-- <label for="newPassword">Новый пароль:</label> -->
         <MyInput
           id="newPassword"
           label="Новый пароль"
@@ -70,7 +66,7 @@ const form = reactive({
 });
 const alertConfig = reactive({
   visible: false,
-  type: "success", // success, error
+  type: "success",
   message: "",
 });
 
@@ -112,33 +108,50 @@ function showAlert(type, message) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .settings {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--border-color);
   margin-left: 20px;
   padding: 20px;
   width: 420px;
-}
-.settings-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 400px;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+
+    input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    }
+
+    button {
+      align-self: flex-end;
+    }
+  }
 }
 
-label {
-  font-weight: bold;
-}
+@media screen and (max-width: 768px) {
+  .settings {
+    width: 100%;
+    margin-left: 0;
+    &__form {
+      min-width: 350px;
+      max-width: 450px;
 
-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-button {
-  align-self: flex-end;
+      input {
+        padding: 0px;
+      }
+      button{
+        align-self: center;
+        width: 90%;
+      }
+      
+    }
+  }
 }
 </style>

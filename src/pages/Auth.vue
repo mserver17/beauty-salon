@@ -1,4 +1,3 @@
-<!-- Auth.vue  -->
 <template>
   <div class="auth">
     <section>
@@ -42,7 +41,7 @@
               {{ isLogin ? "Login" : "Register" }}
             </MyButton>
           </form>
-          <p>
+          <p class="change_type_form">
             {{ isLogin ? "Нет аккаунта?" : "Уже зарегистрированы?" }}
             <a href="#" @click.prevent="toggleAuthMode">
               {{ isLogin ? "Зарегистрироваться" : "Войти" }}
@@ -71,6 +70,15 @@ const emailValue = ref("");
 const passwordValue = ref("");
 const errorMessage = ref("");
 
+const errorMessages = {
+  "auth/invalid-email": "Неверный формат электронной почты.",
+  "auth/user-not-found": "Пользователь с такой почтой не найден.",
+  "auth/wrong-password": "Неверный пароль.",
+  "auth/email-already-in-use": "Эта почта уже зарегистрирована.",
+  "auth/weak-password": "Пароль слишком слабый. Используйте более сложный.",
+  "auth/invalid-credential": "Недействительные учетные данные.",
+};
+
 function updateName(value) {
   nameValue.value = value;
 }
@@ -84,38 +92,30 @@ function toggleAuthMode() {
   isLogin.value = !isLogin.value;
   errorMessage.value = "";
 }
-function handleSubmit() {
-  if (isLogin.value) {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const user = users.find(
-      (u) => u.email === emailValue.value && u.password === passwordValue.value
-    );
 
-    if (user) {
-      store.dispatch("auth/login", user);
-      router.push(localStorage.getItem("redirect") || "/booking");
-    } else {
-      errorMessage.value = "Неверный email или пароль";
-    }
-  } else {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    if (!users.some((user) => user.email === emailValue.value)) {
-      const newUser = {
-        id: Date.now(),
-        name: nameValue.value,
+async function handleSubmit() {
+  try {
+    if (isLogin.value) {
+      await store.dispatch("auth/login", {
         email: emailValue.value,
         password: passwordValue.value,
-      };
-      users.push(newUser);
-      localStorage.setItem("users", JSON.stringify(users));
-      store.dispatch("auth/login", newUser);
-      router.push("/booking");
+      });
+      router.push(localStorage.getItem("redirect") || "/booking");
     } else {
-      errorMessage.value = "Пользователь с таким email уже зарегистрирован";
+      await store.dispatch("auth/register", {
+        email: emailValue.value,
+        password: passwordValue.value,
+        name: nameValue.value,
+      });
+      router.push("/booking");
     }
+  } catch (error) {
+    console.error("Ошибка авторизации:", error); 
+    errorMessage.value = errorMessages[error.code] || "Произошла неизвестная ошибка. Попробуйте снова.";
   }
 }
 </script>
+
 
 <style lang="scss" scoped>
 .auth {
@@ -163,9 +163,14 @@ function handleSubmit() {
           display: grid;
           gap: 16px;
         }
-        a {
+       
+        .change_type_form{
+          margin-top: 30px;
+
+          a {
           color: #613dcb;
           font-weight: bold;
+        }
         }
       }
     }

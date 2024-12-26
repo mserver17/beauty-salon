@@ -43,12 +43,16 @@ const handleClick = (event) => {
   color: #fff;
 }
 .custom-button.primary:hover {
-  /* background-color: var(--button-hover-color); */
+  background-color: var(--button-hover-color);
   transition: 0.3s ease;
   /* transform: translateY(-3px); */
 }
 
 .custom-button.secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+.custom-button.red {
   background-color: #6c757d;
   color: #fff;
 }

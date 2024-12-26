@@ -1,4 +1,3 @@
-<!-- OnlineBookingForm -->
 <template>
   <div class="onlineBooking">
     <section class="view-records">
@@ -60,69 +59,77 @@
         </MyButton>
       </form>
     </section>
-    <AuthDialog :visible="showAuthDialog" @close="showAuthDialog = false" />
+    <DynamicDialog
+      :visible="showDialog"
+      :title="dialogTitle"
+      :message="dialogMessage"
+      :buttons="dialogButtons"
+      @close="closeDialog"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { firebaseDatabase } from "../firebaseConfig";
+import { get, ref as dbRef } from "firebase/database";
+
 import MyInput from "./ui/MyInput.vue";
 import MyButton from "./ui/MyButton.vue";
 import { useStore } from "vuex";
-import AuthDialog from "./AuthDialog.vue";
+import DynamicDialog from "./ui/DynamicDialog.vue";
+import router from "../router";
 
 const selectedService = ref("Стрижка");
 const selectedDate = ref("");
 const selectedTime = ref("");
 const selectedMaster = ref("");
 
-const showAuthDialog = ref(false);
+const isUserAuthenticated = computed(() => !!store.state.auth.user?.id);
+
+const dialogMessage = ref("");
+const dialogButtons = ref([]);
+const dialogTitle = ref("");
 
 const services = ref([]);
 const masters = ref([]);
 const store = useStore();
 
-const isUserAuthenticated = computed(() => !!store.state.auth.user?.id);
-// Все записи
+const showDialog = ref(false);
+watch(showDialog, (isVisible) => {
+  if (isVisible) {
+    document.body.style.overflow = "hidden"; 
+  } else {
+    document.body.style.overflow = "";
+  }
+});
+
 const allBookings = ref(JSON.parse(localStorage.getItem("bookings")) || []);
-
-// const userBookings = computed(() => {
-//   const userId = store.state.auth.user?.id;
-//   return allBookings.value.filter((booking) => booking.userId === userId);
-// });
-// const userBookings = computed(() => {
-//   const userId = store.state.auth.user?.id;
-//   console.log("Current user ID:", userId, store.state.auth.user?.name);
-//   console.log(
-//     "Зарегистрированные пользователи",
-//     JSON.parse(localStorage.getItem("users")),
-//     []
-//   );
-
-//   const allBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-//   const filteredBookings = allBookings.filter(
-//     (booking) => booking.userId === userId
-//   );
-
-//   console.log("Filtered bookings:", filteredBookings);
-
-//   return filteredBookings;
-// });
 const userBookings = computed(() => store.getters["bookings/userBookings"]);
 
 onMounted(async () => {
   console.log(
     "Зарегистрированные пользователи",
-    JSON.parse(localStorage.getItem("users")),
-    []
+    JSON.parse(localStorage.getItem("users")) || []
   );
+
   try {
-    const response = await fetch("/data/data.json");
-    const data = await response.json();
-    services.value = data.services;
-    masters.value = data.masters;
+    const servicesSnapshot = await get(dbRef(firebaseDatabase, "services"));
+    const mastersSnapshot = await get(dbRef(firebaseDatabase, "masters"));
+
+    if (servicesSnapshot.exists()) {
+      services.value = Object.values(servicesSnapshot.val()); 
+    } else {
+      console.warn("Услуги отсутствуют в базе данных");
+    }
+
+    if (mastersSnapshot.exists()) {
+      masters.value = Object.values(mastersSnapshot.val()); 
+    } else {
+      console.warn("Мастера отсутствуют в базе данных");
+    }
   } catch (error) {
-    console.error("Ошибка загрузки данных:", error);
+    console.error("Ошибка загрузки данных из Firebase:", error);
   }
 });
 
@@ -133,9 +140,18 @@ const filteredMasters = computed(() => {
 });
 
 function submitBooking() {
-  const user = store.state.auth.user;
-  if (!user || !user.id) {
-    showAuthDialog.value = true;
+  if (!isUserAuthenticated.value) {
+    dialogTitle.value = "Требуется авторизация";
+    dialogMessage.value = "Чтобы записаться, сначала войдите в систему.";
+    dialogButtons.value = [
+      {
+        label: "Авторизоваться",
+        class: "btn-primary",
+        handler: redirectToAuth,
+      },
+      { label: "Отмена", class: "btn-secondary", handler: closeDialog },
+    ];
+    showDialog.value = true;
     return;
   }
 
@@ -145,7 +161,7 @@ function submitBooking() {
     !selectedTime.value ||
     !selectedMaster.value
   ) {
-    alert("Пожалуйста, заполните все поля перед записью.");
+    alert("Заполните все поля.");
     return;
   }
 
@@ -154,36 +170,49 @@ function submitBooking() {
     date: selectedDate.value,
     time: selectedTime.value,
     master: selectedMaster.value,
-    userId: user.id,
-    userName: user.name,
+    userId: store.state.auth.user.id,
+    userName: store.state.auth.user.name,
   };
 
   store.dispatch("bookings/addBooking", newBooking);
+
+  dialogTitle.value = "Запись успешно добавлена!";
+  dialogMessage.value = "Хотите перейти в профиль, чтобы посмотреть записи?";
+  dialogButtons.value = [
+    {
+      label: "Перейти в профиль",
+      class: "btn-primary",
+      handler: redirectToProfile,
+    },
+    {
+      label: "Создать ещё один запись",
+      class: "btn-secondary",
+      handler: closeDialog,
+    },
+  ];
+  showDialog.value = true;
+
   clearForm();
 }
+function redirectToAuth() {
+  closeDialog();
+  router.push("/auth");
+}
 
-// function deleteBooking(index) {
-//   store.dispatch("bookings/deleteBooking", index);
-// }
+function redirectToProfile() {
+  closeDialog();
+  router.push("/profile");
+}
 
+function closeDialog() {
+  showDialog.value = false;
+}
 function clearForm() {
   selectedService.value = "";
   selectedDate.value = "";
   selectedTime.value = "";
   selectedMaster.value = "";
 }
-
-// function deleteBooking(index) {
-//   const userId = store.state.auth.user?.id;
-//   const userBookingIndex = allBookings.value.findIndex(
-//     (booking, i) => i === index && booking.userId === userId
-//   );
-
-//   if (userBookingIndex > -1) {
-//     allBookings.value.splice(userBookingIndex, 1);
-//     localStorage.setItem("bookings", JSON.stringify(allBookings.value));
-//   }
-// }
 </script>
 
 <style lang="scss" scoped>
@@ -194,6 +223,7 @@ function clearForm() {
     flex-direction: column;
     gap: 10px;
     max-width: 500px;
+    overflow-x: hidden;
     // box-shadow: 10px 10px 20px 10px var(--header-shadow);\
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
@@ -209,16 +239,17 @@ function clearForm() {
 
       label {
         text-align: left;
-        margin-left: 25px;
+        margin-left: 45px;
         font-size: 14px;
-        color: #767676;
+        font-weight: bold;
+        color: #646464;
       }
       .booking_selectors {
-        width: 400px;
+        width: 365px;
         background-color: var(--input-bg-color);
         color: var(--font-color);
         padding: 10px;
-        margin: 5px auto 20px 30px;
+        margin: 5px auto 20px 45px;
         font-size: 16px;
         border: 1px solid #bebebe;
         border-radius: 12px;

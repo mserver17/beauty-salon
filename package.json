@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
+    "bootstrap-vue": "^2.23.1",
     "firebase": "^11.0.1",
     "material-symbols": "^0.25.2",
     "pinia": "^2.2.6",

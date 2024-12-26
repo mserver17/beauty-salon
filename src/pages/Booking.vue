@@ -82,24 +82,14 @@ onMounted(async () => {
       text-align: center;
       transition: background-color 0.3s ease, transform 0.3s ease;
       user-select: none;
-
-      // &:hover {
-      //   // border-color: #c7c7c7;
-      //   // border-bottom: none;
-      //   // color: #863df4;
-      //   // transform: translateY(-2px);
-      //   // transform: scale(1.02);
-      // }
     }
 
     .active-block {
       background-color: var(--bg-color-booking);
       color: var(--font-color);
       box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-      // border-bottom: 1px solid transparent;
       font-weight: 500;
-      // transition: ease-out 0.2s;
-      // z-index: 1;
+
     }
   }
   .booking-content {

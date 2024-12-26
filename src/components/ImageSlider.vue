@@ -56,8 +56,8 @@ onUnmounted(() => {
 <style scoped>
 .slider {
   position: relative;
-  max-width: 1000px;
-  max-height: 560px;
+  max-width: 1300px;
+  max-height: 700px;
   margin: 40px auto;
   overflow: hidden;
 }
@@ -73,7 +73,7 @@ onUnmounted(() => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(72, 3, 235, 0.5);
   color: white;
   font-size: 18px;
   border: none;
