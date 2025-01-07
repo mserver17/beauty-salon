@@ -5,6 +5,8 @@ import DetailedPage from "../pages/DetailedPage.vue";
 import Booking from "../pages/Booking.vue";
 import Auth from "../pages/Auth.vue";
 import Profile from "../pages/Profile.vue";
+import VuetifyPage from "../pages/VuetifyPage.vue";
+
 const routes = [
   {
     path: "/",
@@ -21,7 +23,7 @@ const routes = [
     path: "/catalog/:id",
     name: "DetailedPage",
     component: DetailedPage,
-    props: (route) => ({ id: Number(route.params.id) }),
+    props: true,
   },
   {
     path: "/booking",
@@ -39,6 +41,11 @@ const routes = [
     component: Profile,
     meta: { requiresAuth: true },
   },
+  {
+    path: "/vuetify",
+    name: "VuetifyPage",
+    component: VuetifyPage,
+  },
 ];
 
 const router = createRouter({
@@ -47,8 +54,7 @@ const router = createRouter({
 });
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem("token");
-  console.log("Is Authenticated:", isAuthenticated); 
-  console.log("Target route:", to.path);
+  console.log("Is Authenticated:", isAuthenticated);
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     console.log("Redirecting to /auth");
@@ -57,6 +63,5 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
 
 export default router;

@@ -1,18 +1,21 @@
 <template>
   <div class="onlineBooking">
     <section class="view-records">
-      <template v-if="isUserAuthenticated">
-        <p>Хотите просмотреть свои записи?</p>
-        <router-link to="/profile" class="view-records__link">
-          Перейти к моим записям
-        </router-link>
-      </template>
-      <template v-else>
-        <p>Чтобы записаться онлайн, необходимо авторизоваться.</p>
-        <router-link to="/auth" class="view-records__link">
-          Авторизоваться
-        </router-link>
-      </template>
+      <div class="view-records__wrapper">
+        <template v-if="isUserAuthenticated">
+          <p>Хотите просмотреть свои записи?</p>
+          <router-link to="/profile" class="view-records__link">
+            <span class="material-symbols-outlined"> list_alt </span>
+            Перейти к записям
+          </router-link>
+        </template>
+        <template v-else>
+          <p>Чтобы записаться онлайн, необходимо авторизоваться.</p>
+          <router-link to="/auth" class="view-records__link">
+            Авторизоваться
+          </router-link>
+        </template>
+      </div>
     </section>
 
     <section class="onlineBooking__form">
@@ -37,6 +40,7 @@
           id="date"
           v-model="selectedDate"
           label="Выберите желаемую дату"
+          :minDate="new Date().toISOString().split('T')[0]"
         />
         <MyInput
           type="time"
@@ -71,14 +75,14 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-import { firebaseDatabase } from "../firebaseConfig";
+import { firebaseDatabase } from "../../firebaseConfig";
 import { get, ref as dbRef } from "firebase/database";
 
-import MyInput from "./ui/MyInput.vue";
-import MyButton from "./ui/MyButton.vue";
+import MyInput from "../ui/MyInput.vue";
+import MyButton from "../ui/MyButton.vue";
 import { useStore } from "vuex";
-import DynamicDialog from "./ui/DynamicDialog.vue";
-import router from "../router";
+import DynamicDialog from "../ui/DynamicDialog.vue";
+import router from "../../router";
 
 const selectedService = ref("Стрижка");
 const selectedDate = ref("");
@@ -98,7 +102,7 @@ const store = useStore();
 const showDialog = ref(false);
 watch(showDialog, (isVisible) => {
   if (isVisible) {
-    document.body.style.overflow = "hidden"; 
+    document.body.style.overflow = "hidden";
   } else {
     document.body.style.overflow = "";
   }
@@ -108,23 +112,18 @@ const allBookings = ref(JSON.parse(localStorage.getItem("bookings")) || []);
 const userBookings = computed(() => store.getters["bookings/userBookings"]);
 
 onMounted(async () => {
-  console.log(
-    "Зарегистрированные пользователи",
-    JSON.parse(localStorage.getItem("users")) || []
-  );
-
   try {
     const servicesSnapshot = await get(dbRef(firebaseDatabase, "services"));
     const mastersSnapshot = await get(dbRef(firebaseDatabase, "masters"));
 
     if (servicesSnapshot.exists()) {
-      services.value = Object.values(servicesSnapshot.val()); 
+      services.value = Object.values(servicesSnapshot.val());
     } else {
       console.warn("Услуги отсутствуют в базе данных");
     }
 
     if (mastersSnapshot.exists()) {
-      masters.value = Object.values(mastersSnapshot.val()); 
+      masters.value = Object.values(mastersSnapshot.val());
     } else {
       console.warn("Мастера отсутствуют в базе данных");
     }
@@ -217,17 +216,21 @@ function clearForm() {
 
 <style lang="scss" scoped>
 .onlineBooking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   &__form {
     background-color: var(--bg-color);
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 10px;
-    max-width: 500px;
+    max-width: 600px;
+    min-width: 500px;
     overflow-x: hidden;
-    // box-shadow: 10px 10px 20px 10px var(--header-shadow);\
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-    margin: 40px auto;
+    margin: 20px auto 0px;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 20px 0px;
@@ -236,61 +239,93 @@ function clearForm() {
       display: flex;
       flex-direction: column;
       padding: 20px;
+      min-width: 450px;
 
       label {
-        text-align: left;
-        margin-left: 45px;
         font-size: 14px;
         font-weight: bold;
-        color: #646464;
+        color: #5f5f5f;
+        display: block;
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
       }
       .booking_selectors {
-        width: 365px;
+        width: 100%;
         background-color: var(--input-bg-color);
         color: var(--font-color);
         padding: 10px;
-        margin: 5px auto 20px 45px;
+        margin-bottom: 20px;
         font-size: 16px;
         border: 1px solid #bebebe;
         border-radius: 12px;
         outline: none;
       }
       .btn_booking {
-        width: 400px;
+        width: 100%;
         margin: 5px auto;
       }
     }
   }
 
   .view-records {
-    margin-top: 20px;
-    text-align: center;
-    margin: 30px auto;
-    padding: 20px;
+    // position: absolute;
+    // margin-top: 40px;
+    padding: 15px;
     width: auto;
-    max-width: 300px;
+    max-width: 250px;
     height: auto;
-    // box-shadow: 10px 10px 20px 10px var(--header-shadow);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
     background-color: var(--bg-color);
-    // border: 1px solid var(--nav-btn-bg-hover);
     border: 1px solid var(--border-color);
-
     border-radius: 12px;
 
+    &__wrapper {
+      display: flex;
+      flex-direction: column;
+      margin: 0%;
+    }
+
     &__link {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: var(--nav-btn-bg-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 0px;
+      background-color: var(--button-bg-color);
       color: white;
       text-decoration: none;
       border-radius: 5px;
       transition: background-color 0.3s;
 
       &:hover {
-        background-color: #4751dd;
+        background-color: var(--button-hover-color);
       }
+    }
+  }
+}
+
+@media (max-width: 668px) {
+  .onlineBooking {
+    flex-direction: column;
+    align-items: center;
+
+    &__form {
+      margin: 20px auto;
+      min-width: 350px;
+      padding: 10px;
+
+      form {
+        padding: 10px;
+        min-width: 300px;
+
+        .btn_booking {
+          width: 300px;
+          margin: 5px auto;
+        }
+      }
+    }
+    .view-records {
+      position: relative;
     }
   }
 }

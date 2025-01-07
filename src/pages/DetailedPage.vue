@@ -6,18 +6,23 @@
     </div>
 
     <div class="subservices">
-      <h2>Подуслуги</h2>
-      <div v-if="service.subservices && service.subservices.length" class="subservices-grid">
+      <!-- <h2>Услуги</h2> -->
+      <div
+        v-if="service.subservices && service.subservices.length"
+        class="subservices-grid"
+      >
         <div
           class="subservice-card"
-          v-for="subservice in service.subservices"
-          :key="subservice.id"
-          @click="openModal(subservice)"
+          v-for="(subservice, index) in service.subservices"
+          :key="index"
         >
           <div class="subservice-content">
-            <h3>{{ subservice.name }}</h3>
+            <h3 @click="openModal(subservice)">{{ subservice.name }}</h3>
             <p class="price">{{ subservice.price }} руб.</p>
             <p class="subservice-description">{{ subservice.description }}</p>
+          </div>
+          <div class="subservice-btn">
+            <MyButton>Выбрать</MyButton>
           </div>
         </div>
       </div>
@@ -28,7 +33,13 @@
       :visible="dialogVisible"
       :title="dialogTitle"
       :message="dialogMessage"
-      :buttons="[ { label: 'Закрыть', class: 'btn-secondary', handler: () => (dialogVisible = false) } ]"
+      :buttons="[
+        {
+          label: 'Закрыть',
+          class: 'btn-secondary',
+          handler: () => (dialogVisible = false),
+        },
+      ]"
       @close="dialogVisible = false"
     />
     <button class="back-button" @click="goBack">Назад</button>
@@ -41,7 +52,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getDatabase, ref as dbRef, get } from "firebase/database";
 import DinamicDialog from "../components/ui/DynamicDialog.vue";
-
+import MyButton from "../components/ui/MyButton.vue";
 const service = ref(null);
 const dialogVisible = ref(false);
 const dialogTitle = ref("");
@@ -57,7 +68,7 @@ const fetchServiceFromFirebase = async (id) => {
   try {
     const snapshot = await get(serviceRef);
     if (snapshot.exists()) {
-      service.value = { id, ...snapshot.val() };
+      service.value = snapshot.val();
     } else {
       console.error("Данные не найдены.");
     }
@@ -91,10 +102,11 @@ watch(
 
 <style lang="scss" scoped>
 .service-group {
+  background-color: var(--section-bg-color);
+  color: var(--font-color);
   padding: 40px 20px;
   max-width: 1000px;
-  margin: 0 auto;
-  background: var(--background-color);
+  margin: 40px auto;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -128,11 +140,13 @@ watch(
     }
 
     .subservice-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       background: var(--card-bg-color);
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       padding: 20px;
-      cursor: pointer;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
 
       &:hover {
@@ -142,6 +156,7 @@ watch(
 
       .subservice-content {
         h3 {
+          cursor: pointer;
           font-size: 1.2rem;
           color: var(--text-color);
           margin-bottom: 10px;

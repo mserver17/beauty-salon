@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
     "firebase": "^11.0.1",
@@ -17,6 +18,7 @@
     "sass": "^1.80.4",
     "vue": "^3.5.12",
     "vue-router": "^4.0.13",
+    "vuetify": "^3.7.6",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

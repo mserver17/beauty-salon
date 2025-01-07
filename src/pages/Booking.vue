@@ -18,7 +18,7 @@
         :class="{ 'active-block': selectedForm === 'schedule' }"
         @click="showForm('schedule')"
       >
-        Посмотреть расписание мастеров
+        Расписание мастеров
       </li>
     </ul>
     <div class="booking-content">
@@ -32,10 +32,10 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import OnlineBookingForm from "../components/OnlineBookingForm.vue";
+import OnlineBookingForm from "../components/bookingComponents/OnlineBookingForm.vue";
 // import MyButton from "../components/ui/MyButton.vue";
-import QuickBooking from "../components/QuickBooking.vue";
-import ScheduleMasters from "../components/ScheduleMasters.vue";
+import QuickBooking from "../components/bookingComponents/QuickBooking.vue";
+import ScheduleMasters from "../components/bookingComponents/ScheduleMasters.vue";
 
 const selectedForm = ref("online");
 const masters = ref([]);
@@ -57,11 +57,12 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .booking {
+  color: var(--font-color);
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
-  padding: 20px 0px 20px 0px;
+  margin: 40px auto;
+  padding: 20px 0;
 
   .recording_options {
     display: flex;
@@ -69,19 +70,28 @@ onMounted(async () => {
     list-style: none;
     margin: 0;
     padding: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
 
     li {
-      padding: 10px 20px;
-      margin: 0 10px;
+      flex: 1;
+      text-align: center;
+      padding: 12px 20px;
+      margin: 0 5px;
       border: 1px solid #e2e2e2;
       border-bottom: none;
       border-radius: 8px 8px 0 0;
-      background-color: var(--button-background-color);
-      color: var(--text-color);
       cursor: pointer;
-      text-align: center;
       transition: background-color 0.3s ease, transform 0.3s ease;
+      white-space: nowrap;
       user-select: none;
+
+      &:hover {
+        background-color: var(--button-hover-color);
+        color: #fff;
+        transform: scale(1.02);
+      }
     }
 
     .active-block {
@@ -89,13 +99,44 @@ onMounted(async () => {
       color: var(--font-color);
       box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
       font-weight: 500;
-
     }
   }
+
   .booking-content {
     border-radius: 12px;
-    width: 1070px;
+    width: 100%;
+    max-width: 1070px;
+    padding: 20px;
     background-color: var(--bg-color-booking);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  // Адаптивность
+  @media (max-width: 768px) {
+    .recording_options {
+      li:nth-child(3) {
+        // &:after {
+        //   content: "Расписание";
+        // }
+      }
+    }
+
+    .booking-content {
+      padding: 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .recording_options {
+      li {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+    }
+
+    .booking-content {
+      padding: 10px;
+    }
   }
 }
 </style>

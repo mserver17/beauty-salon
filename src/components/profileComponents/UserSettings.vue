@@ -123,10 +123,10 @@ function showAlert(type, message) {
     max-width: 400px;
 
     input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
 
     button {
@@ -139,6 +139,7 @@ function showAlert(type, message) {
   .settings {
     width: 100%;
     margin-left: 0;
+    padding: 20px 0;
     &__form {
       min-width: 350px;
       max-width: 450px;
@@ -146,11 +147,10 @@ function showAlert(type, message) {
       input {
         padding: 0px;
       }
-      button{
+      button {
         align-self: center;
         width: 90%;
       }
-      
     }
   }
 }

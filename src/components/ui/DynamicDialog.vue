@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="visible"
-    class="modal-overlay"
-    @click.self="close"
-  >
+  <div v-if="visible" class="modal-overlay" @click.self="close">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -36,44 +32,61 @@
     </div>
   </div>
 </template>
+<script setup>
+import { watch } from "vue";
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    required: true,
+  },
+  title: {
+    type: String,
+    default: "Сообщение",
+  },
+  message: {
+    type: String,
+    default: "",
+  },
+  buttons: {
+    type: Array,
+    default: () => [],
+  },
+});
 
-<script>
-export default {
-  props: {
-    visible: {
-      type: Boolean,
-      required: true,
-    },
-    title: {
-      type: String,
-      default: "Сообщение",
-    },
-    message: {
-      type: String,
-      default: "",
-    },
-    buttons: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  emits: ["close"],
-  methods: {
-    close() {
-      this.$emit("close");
-    },
-  },
+const emit = defineEmits(["close"]);
+
+const close = () => {
+  emit("close");
 };
+
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      document.body.style.setProperty("overflow", "hidden", "important");
+      document.documentElement.style.setProperty(
+        "overflow",
+        "hidden",
+        "important"
+      );
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped>
 .modal-overlay {
   position: fixed;
+  overflow: hidden;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); 
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -158,11 +171,11 @@ export default {
   }
 
   &.btn-secondary {
-    background-color: #e0e0e0;
-    color: #333;
+    background-color: var(--button-deactive-color);
+    color: var(--font-color);
 
     &:hover {
-      background-color: #d6d6d6;
+      background-color: var(--button-deactive-hover);
     }
   }
 }

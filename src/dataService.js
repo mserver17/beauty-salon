@@ -7,7 +7,7 @@ export const fetchServicesGroups = async () => {
     const servicesRef = ref(db, "servicesGroups");
     const snapshot = await get(servicesRef);
     if (snapshot.exists()) {
-      return snapshot.val(); // Вернет массив групп услуг
+      return snapshot.val();
     } else {
       console.log("Данные отсутствуют.");
       return [];

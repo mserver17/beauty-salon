@@ -34,20 +34,20 @@
           Выйти
         </button>
         <DinamicDialog
-      v-if="showLogoutModal"
-      :visible="showLogoutModal"
-      title="Вы уверены, что хотите выйти из профиля?"
-      :message="'Чтобы получить доступ к своим записям вам необходимо будет заново зайти в профиль'"
-      :buttons="[
-        { label: 'Да, выйти', class: 'btn-danger', handler: logout },
-        {
-          label: 'Остаться',
-          class: 'btn-secondary',
-          handler: closeLogoutModal,
-        },
-      ]"
-      @close="closeLogoutModal"
-    />
+          v-if="showLogoutModal"
+          :visible="showLogoutModal"
+          title="Вы уверены, что хотите выйти из профиля?"
+          :message="'Чтобы получить доступ к своим записям вам необходимо будет заново зайти в профиль'"
+          :buttons="[
+            { label: 'Да, выйти', class: 'btn-danger', handler: logout },
+            {
+              label: 'Остаться',
+              class: 'btn-secondary',
+              handler: closeLogoutModal,
+            },
+          ]"
+          @close="closeLogoutModal"
+        />
       </div>
     </div>
     <transition
@@ -65,12 +65,11 @@
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
-
-import UserBookings from "../components/UserProfile/UserBookings.vue";
-import UserVisitHistory from "../components/UserProfile/UserVisitHistory.vue";
-import UserSettings from "../components/UserProfile/UserSettings.vue";
-import UserTestimotionals from "../components/UserProfile/UserTestimotionals.vue";
-import DinamicDialog from "../components/ui/DynamicDialog.vue"
+import UserBookings from "../components/profileComponents/UserBookings.vue";
+import UserVisitHistory from "../components/profileComponents/UserVisitHistory.vue";
+import UserSettings from "../components/profileComponents/UserSettings.vue";
+import UserReviews from "../components/profileComponents/UserReviews.vue";
+import DinamicDialog from "../components/ui/DynamicDialog.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -84,7 +83,7 @@ const sectionComponents = {
   bookings: UserBookings,
   history: UserVisitHistory,
   settings: UserSettings,
-  reviews: UserTestimotionals,
+  reviews: UserReviews,
 };
 
 const sectionLabels = {
@@ -114,7 +113,7 @@ const uploadPhoto = (event) => {
   if (file && user.value) {
     const reader = new FileReader();
     reader.onload = () => {
-      const photoDataUrl = reader.result; 
+      const photoDataUrl = reader.result;
       store.commit("auth/updateUser", {
         photo: photoDataUrl,
       });
@@ -124,20 +123,19 @@ const uploadPhoto = (event) => {
 };
 
 function openLogoutModal() {
-  console.log("Попытка выхода",);
+  console.log("Попытка выхода");
   showLogoutModal.value = true;
 }
 function closeLogoutModal() {
-  console.log("Передумал(а) выходить",);
+  console.log("Передумал(а) выходить");
   showLogoutModal.value = false;
 }
 
 function logout() {
-  console.log("Выход из профиля",);
-    store.dispatch("auth/logout");
-    router.push("/");
+  console.log("Выход из профиля");
+  store.dispatch("auth/logout");
+  router.push("/");
   closeLogoutModal();
-
 }
 function onBeforeLeave() {
   showSection.value = false;
@@ -146,7 +144,6 @@ function onBeforeLeave() {
 function onAfterLeave() {
   showSection.value = true;
 }
-
 </script>
 
 <style lang="scss" scoped>
@@ -182,7 +179,6 @@ function onAfterLeave() {
         background-color: var(--border-color);
         margin: 0px auto;
         margin-bottom: 60px;
-        
 
         img {
           border-radius: 200px;
@@ -267,13 +263,13 @@ function onAfterLeave() {
 
 @media screen and (max-width: 768px) {
   .ProfileContainer {
-    flex-direction: column; 
-    padding: 10px; 
+    flex-direction: column;
+    padding: 10px;
 
     .profile {
       min-width: unset;
-      width: 100%; 
-      margin-bottom: 20px; 
+      width: 100%;
+      margin-bottom: 20px;
       padding: 10px;
     }
 
@@ -291,7 +287,7 @@ function onAfterLeave() {
       &__items {
         font-size: 16px;
         li {
-          padding: 8px; 
+          padding: 8px;
         }
       }
 

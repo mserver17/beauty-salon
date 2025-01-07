@@ -26,7 +26,7 @@ const handleClick = (event) => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .custom-button {
   padding: 10px 20px;
   border: none;
@@ -49,7 +49,7 @@ const handleClick = (event) => {
 }
 
 .custom-button.secondary {
-  background-color: #6c757d;
+  background-color: var(--button-deactive-color);
   color: #fff;
 }
 .custom-button.red {

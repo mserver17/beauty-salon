@@ -10,6 +10,8 @@
         @input="$emit('update:modelValue', $event.target.value)"
         :placeholder="placeholder"
         :class="{ 'input-error': error }"
+        :min="minDate"
+        :max="maxDate"
         required
       />
       <button
@@ -18,10 +20,13 @@
         class="toggle-password"
         @click="togglePassword"
       >
-        {{ showPassword ? "👁️" : "🙈" }}
+        <span v-if="showPassword" class="material-symbols-outlined">
+          visibility
+        </span>
+        <span v-else class="material-symbols-outlined"> visibility_off </span>
       </button>
     </div>
-       <span v-if="error" class="error-message">{{ errorMessage }}</span>
+    <span v-if="error" class="error-message">{{ errorMessage }}</span>
   </div>
 </template>
 
@@ -38,7 +43,7 @@ const props = defineProps({
     required: true,
   },
   modelValue: {
-    type: String,
+    type: [String, Number],
     required: true,
   },
   type: {
@@ -57,6 +62,16 @@ const props = defineProps({
     type: String,
     default: "Ошибка",
   },
+  minDate: {
+    type: String,
+    default: new Date().toISOString().split("T")[0],
+  },
+  maxDate: {
+    type: String,
+    default: new Date(new Date().setFullYear(new Date().getFullYear() + 2))
+      .toISOString()
+      .split("T")[0],
+  },
 });
 
 const showPassword = ref(false);
@@ -65,7 +80,7 @@ function togglePassword() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .custom-input {
   margin-bottom: 20px;
   display: flex;
@@ -81,12 +96,12 @@ function togglePassword() {
   display: block;
   text-align: left;
   margin-bottom: 5px;
-  width: 80%;
+  width: 100%;
 }
 
 .input-wrapper {
   position: relative;
-  width: 80%;
+  width: 100%;
 }
 
 .input-icon {
@@ -98,11 +113,10 @@ function togglePassword() {
   font-size: 16px;
 }
 
-
 input {
   width: 100%;
   padding: 10px 16px;
-  padding-left: 25px; 
+  padding-left: 25px;
   border: 1px solid #919191;
   border-radius: 14px;
   outline: none;
@@ -110,26 +124,23 @@ input {
   color: var(--font-color, #000);
   font-size: 16px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
 
-.input-error {
-  border-color: red;
-  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  &-error {
+    border-color: red;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  }
+  &:focus {
+    border-color: var(--primary-color, #763bd4);
+    box-shadow: 0 0 5px rgba(81, 0, 255, 0.5);
+  }
+  &:hover {
+    border-color: var(--secondary-color, #675f73);
+  }
+  &::placeholder {
+    color: rgba(127, 127, 127, 0.5);
+    font-size: 14px;
+  }
 }
-
-input:focus {
-  border-color: var(--primary-color, #763bd4);
-  box-shadow: 0 0 5px rgba(81, 0, 255, 0.5);
-}
-input:hover {
-  border-color: var(--secondary-color, #6c757d);
-}
-
-input::placeholder {
-  color: rgba(127, 127, 127, 0.5);
-  font-size: 14px;
-}
-
 .error-message {
   color: red;
   font-size: 12px;
@@ -142,7 +153,13 @@ input::placeholder {
   cursor: pointer;
   position: absolute;
   right: 10px;
+  bottom: 7px;
   color: #888;
+
+  span {
+    color: var(--font-color);
+    font-size: 18px;
+  }
 }
 
 @media (max-width: 768px) {

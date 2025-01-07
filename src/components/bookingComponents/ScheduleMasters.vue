@@ -51,7 +51,7 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import DinamicDialog from "./ui/DynamicDialog.vue";
+import DinamicDialog from "../ui/DynamicDialog.vue";
 
 defineProps({
   masters: {
@@ -141,7 +141,7 @@ const redirectToForm = () => {
   }
 
   .table-container {
-    overflow-x: auto; 
+    overflow-x: auto;
   }
 
   .schedule_table {

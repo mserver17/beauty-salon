@@ -42,6 +42,8 @@
   --button-bg-color: #7163e2;
   --button-hover-color: #6d5fd2;
   --button-active-color: #7f71ee;
+  --button-deactive-color: #c4c4c4;
+  --button-deactive-hover: #979797;
   --card-bg-color: #f9f9f939;
   --card-hover-color: #73737341;
   --detailed-card-hover-color: #a499fb69;
@@ -76,6 +78,8 @@
   --button-bg-color: #7163e2;
   --button-hover-color: #5b4dc2;
   --button-active-color: #8a7df2;
+  --button-deactive-color: #555555;
+  --button-deactive-hover: #434343;
   --card-bg-color: #3a3a3a;
   --card-hover-color: #55469160;
   --detailed-card-hover-color: #7f71ee;
@@ -97,8 +101,8 @@
 body {
   color: var(--font-color) !important;
   background-color: var(--bg-color) !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
   /* display: flex; */
   place-items: center;
@@ -122,6 +126,7 @@ a:hover {
 }
 
 #app {
+  background-color: var(--bg-color);
   max-width: 1520px;
   width: 100%;
   height: 100vh;
