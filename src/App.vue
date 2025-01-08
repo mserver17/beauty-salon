@@ -41,20 +41,7 @@
     <router-view />
   </main>
 
-  <footer :class="{ 'main-expanded': !isSidebarOpen }">
-    <div>
-      <ul>
-        <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
-      </ul>
-    </div>
-    <div>
-      <ul>
-        <li>Ссылки на резурсы</li>
-        <li>Ссылки на резурсы</li>
-      </ul>
-    </div>
-  </footer>
+  <Footer :isSidebarOpen="isSidebarOpen"></Footer>
 </template>
 
 <script setup>
@@ -62,7 +49,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import ToggleTheme from "./components/ToggleTheme.vue";
 import AsideBar from "./components/AsideBar.vue";
-
+import Footer from "./components/Footer.vue";
 const isSidebarOpen = ref(true);
 const isMobile = ref(false);
 const isMinimized = ref(false);
@@ -159,6 +146,16 @@ button {
   cursor: pointer;
   font-size: 35px;
 }
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: block;
+  z-index: 9;
+}
 
 main {
   transition: margin-left 0.3s ease;
@@ -189,34 +186,6 @@ main {
   .main-expanded {
     margin-left: 0;
   }
-  footer {
-    margin-left: 0px;
-  }
-}
-footer {
-  height: 300px;
-  margin-top: 40px;
-  background-color: var(--footer-bg-color);
-  display: flex;
-  padding: 30px;
-  align-items: center;
-  justify-content: center;
-  transition: margin-left 0.3s ease;
-  margin-left: 100px;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.overlay {
-  display: block;
-  z-index: 9;
 }
 
 .main-expanded {
