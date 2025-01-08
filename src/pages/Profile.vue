@@ -151,7 +151,7 @@ function onAfterLeave() {
   display: flex;
   user-select: none;
   padding: 20px 20px 20px 50px;
-  align-items: center;
+  // align-items: center;
   flex-direction: row;
   margin: 3% auto;
   transition: all 0.5s ease;
@@ -160,6 +160,7 @@ function onAfterLeave() {
     min-width: 400px;
     text-align: center;
     max-width: 500px;
+    max-height: fit-content;
     padding: 20px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -286,6 +287,7 @@ function onAfterLeave() {
 
       &__items {
         font-size: 16px;
+        padding: 10px;
         li {
           padding: 8px;
         }

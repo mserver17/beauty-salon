@@ -31,8 +31,6 @@
         </tbody>
       </table>
     </div>
-
-    <!-- DinamicDialog -->
     <DinamicDialog
       :visible="isDialogVisible"
       :title="'Подтверждение записи'"
@@ -110,7 +108,7 @@ const isFree = (masterId, hour) => {
 const openDialog = (master, time) => {
   selectedMaster.value = master;
   selectedTime.value = time;
-  dialogMessage.value = `Вы выбрали мастера ${master.name} на ${time}:00`;
+  dialogMessage.value = `Хотите записаться к мастеру ${master.name} на ${time}:00 ?`;
   isDialogVisible.value = true;
 };
 

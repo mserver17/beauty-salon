@@ -42,9 +42,16 @@
     </form>
 
     <h2>Мои отзывы</h2>
+    <div class="sorter">
+      <label class="reviews__sort__label" for="sort">Сортировать по:</label>
+      <select id="sort" v-model="sortCriteria" class="reviews__sort__selector">
+        <option value="rating">Рейтингу</option>
+        <option value="service">Услуге</option>
+      </select>
+    </div>
     <ul class="reviews__list">
       <li
-        v-for="review in userReviews"
+        v-for="review in sortedReviews"
         :key="review.id"
         class="reviews__list__item"
       >
@@ -101,6 +108,7 @@ const reviewsToDeleteId = ref(null);
 const services = ref([]);
 const showForm = ref(false);
 const newReview = reactive({ service: "", text: "", rating: 0 });
+const sortCriteria = ref("rating");
 
 onMounted(() => {
   store.dispatch("reviews/fetchUserReviews");
@@ -149,18 +157,29 @@ function confirmDelete() {
   store.dispatch("reviews/deleteReview", reviewsToDeleteId.value);
   closeDeleteModal();
 }
+const sortedReviews = computed(() => {
+  if (sortCriteria.value === "rating") {
+    return [...userReviews.value].sort((a, b) => b.rating - a.rating);
+  } else if (sortCriteria.value === "service") {
+    return [...userReviews.value].sort((a, b) =>
+      a.service.localeCompare(b.service)
+    );
+  }
+  return userReviews.value;
+});
 </script>
 
 <style lang="scss" scoped>
 .reviews {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--border-color);
+  background-color: var(--sidebar-bg-color);
   margin-left: 20px;
   padding: 20px;
   width: 420px;
 
   .toggle-btn {
-    margin-bottom: 40px;
+    margin: 40px 0 40px;
   }
   &__form {
     margin-bottom: 1rem;
@@ -193,6 +212,8 @@ function confirmDelete() {
     }
     textarea {
       width: 80%;
+      height: 200px;
+
       padding: 12px;
       border-radius: 15px;
       border: 1px solid #ccc;
@@ -234,6 +255,25 @@ function confirmDelete() {
       }
     }
   }
+  .sorter {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin: 20px 0 40px;
+    .reviews__sort__label {
+      margin-right: 0px;
+      flex: 1;
+    }
+    .reviews__sort__selector {
+      flex: 1;
+      padding: 5px 7px;
+      border: 1px solid var(--button-hover-color);
+      border-radius: 7px;
+      outline: none;
+      color: var(--font-color);
+      width: 140px;
+    }
+  }
 
   &__list {
     list-style: none;
@@ -247,9 +287,23 @@ function confirmDelete() {
       display: flex;
       justify-content: space-between;
       padding: 1rem;
-      border: 1px solid #ccc;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
-      background-color: #f9f9f9;
+      background-color: var(--bg-color);
+      background: linear-gradient(
+        145deg,
+        var(--bg-color),
+        var(--header-bg-color)
+      );
+      box-shadow: 4px 4px 8px var(--section-shadow) -4px -4px 8px
+        var(--section-shadow2);
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 6px 6px 12px var(--section-shadow),
+          -6px -6px 12px var(--section-shadow2);
+      }
       &__info {
         min-width: 250px;
         .stars {
@@ -294,6 +348,16 @@ function confirmDelete() {
   .reviews {
     width: 100%;
     margin-left: 0;
+    padding: 10px;
+
+    &__form {
+      &__selector {
+        width: 90%;
+      }
+      textarea {
+        width: 90%;
+      }
+    }
     &__list {
       min-width: 250px;
       max-width: 450px;

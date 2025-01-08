@@ -113,13 +113,14 @@ watch(
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  background-color: var(--primary-color, #7163e2);
+  background-color: var(--primary-color, #7263e2);
   color: #fff;
 }
 
 .modal-title {
   font-size: 1.25rem;
   margin: 0;
+  text-align: left;
 }
 
 .btn-close {
@@ -195,6 +196,19 @@ watch(
   }
   to {
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-footer {
+    flex-wrap: wrap;
+    padding: 15px 10px;
+
+    button {
+      width: 100%;
+      font-size: 16px;
+      padding: 12px 2px;
+    }
   }
 }
 </style>

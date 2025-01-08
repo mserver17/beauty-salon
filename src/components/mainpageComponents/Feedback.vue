@@ -121,8 +121,6 @@ const submitContactForm = () => {
     }
   }
 }
-
-// Адаптивная версия
 @media (max-width: 768px) {
   .feedback {
     padding: 1rem;

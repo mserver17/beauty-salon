@@ -1,27 +1,26 @@
 <template>
-  <section class="testimonials">
+  <section class="testimonials_container">
     <h2>Отзывы клиентов</h2>
-    <div class="testimonial-list-container">
-      <button class="scroll-button left" @click="scrollLeft">◀</button>
+    <div class="testimonials">
+      <button class="prev" @click="prevReview">&#10094;</button>
 
-      <div class="testimonial-list" ref="testimonialList">
+      <div class="testimonials_list" ref="testimonialList">
         <div
           v-for="testimonial in testimonials"
           :key="testimonial.id"
-          class="review-item"
+          class="testimonials_list_item"
         >
           <blockquote>"{{ testimonial.text }}"</blockquote>
           <cite>- {{ testimonial.author }}</cite>
         </div>
       </div>
 
-      <button class="scroll-button right" @click="scrollRight">▶</button>
+      <button class="next" @click="nextReview">&#10095;</button>
     </div>
   </section>
 </template>
-
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
   testimonials: {
@@ -31,55 +30,28 @@ const props = defineProps({
 });
 
 const testimonialList = ref(null);
-const scrollAmount = ref(300); // Расстояние прокрутки
 
-// Функция обновления расстояния скролла в зависимости от ширины экрана
-const updateScrollAmount = () => {
-  if (window.innerWidth <= 480) {
-    scrollAmount.value = window.innerWidth; // На мобильных показываем один отзыв
-  } else if (window.innerWidth <= 768) {
-    scrollAmount.value = 260; // На планшетах скроллим меньше
-  } else {
-    scrollAmount.value = 300; // На десктопах стандартное значение
-  }
-};
-
-const scrollLeft = () => {
-  testimonialList.value.scrollBy({
-    left: -scrollAmount.value,
-    behavior: "smooth",
-  });
-};
-
-const scrollRight = () => {
-  testimonialList.value.scrollBy({
-    left: scrollAmount.value,
-    behavior: "smooth",
-  });
-};
-
-const handleWheelScroll = (event) => {
-  testimonialList.value.scrollBy({ left: event.deltaY, behavior: "smooth" });
-};
-
-onMounted(() => {
+const prevReview = () => {
   if (testimonialList.value) {
-    testimonialList.value.addEventListener("wheel", handleWheelScroll);
+    testimonialList.value.scrollBy({
+      left: -testimonialList.value.offsetWidth / 2,
+      behavior: "smooth",
+    });
   }
-  updateScrollAmount(); // Устанавливаем расстояние при монтировании
-  window.addEventListener("resize", updateScrollAmount); // Обновляем расстояние при изменении размера окна
-});
+};
 
-onUnmounted(() => {
+const nextReview = () => {
   if (testimonialList.value) {
-    testimonialList.value.removeEventListener("wheel", handleWheelScroll);
+    testimonialList.value.scrollBy({
+      left: testimonialList.value.offsetWidth / 2,
+      behavior: "smooth",
+    });
   }
-  window.removeEventListener("resize", updateScrollAmount);
-});
+};
 </script>
 
 <style scoped lang="scss">
-.testimonials {
+.testimonials_container {
   max-width: 1000px;
   margin: 40px auto;
   padding: 20px;
@@ -93,98 +65,78 @@ onUnmounted(() => {
     margin-bottom: 20px;
     color: var(--font-color);
   }
-}
 
-.testimonial-list-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
-}
+  .testimonials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
 
-.testimonial-list {
-  display: flex;
-  gap: 20px;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  padding: 10px;
-  width: 100%;
-  position: relative;
-}
+    &_list {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
 
-.review-item {
-  flex-shrink: 0;
-  min-width: 260px;
-  max-width: 300px;
-  background-color: var(--bg-color);
+      padding: 10px;
+      width: 100%;
+      position: relative;
+      scrollbar-width: thin;
+      scrollbar-color: #8c5cd5 transparent;
 
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: left;
+      &::-webkit-scrollbar {
+        height: 8px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #c49dff;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: #b27aff;
+      }
 
-  blockquote {
-    font-size: 16px;
-    color: var(--font-color);
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
 
-    margin-bottom: 10px;
-  }
+      &_item {
+        flex-shrink: 0;
+        min-width: 260px;
+        max-width: 300px;
+        background-color: var(--bg-color);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: left;
 
-  cite {
-    font-size: 14px;
-    color: #8863bd;
-    font-style: italic;
-  }
-}
+        blockquote {
+          font-size: 16px;
+          color: var(--font-color);
+          margin-bottom: 10px;
+        }
 
-.scroll-button {
-  background-color: #835ac1;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-  font-size: 18px;
-  border-radius: 50%;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s, transform 0.2s;
-
-  &:hover {
-    background-color: #6e48a8;
-    transform: scale(1.1);
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  &.left {
-    margin-right: 10px;
-  }
-
-  &.right {
-    margin-left: 10px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 8px 12px;
-    font-size: 16px;
+        cite {
+          font-size: 14px;
+          color: #8863bd;
+          font-style: italic;
+        }
+      }
+    }
+    .prev,
+    .next {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 24px;
+      border: none;
+      padding: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
   }
 }
 
 @media (max-width: 768px) {
-  .review-item {
-    min-width: 260px;
-    max-width: 260px;
-    padding: 15px;
-  }
-
-  .testimonial-list {
-    gap: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .testimonials {
+  .testimonials_container {
     padding: 15px;
 
     h2 {
@@ -192,15 +144,26 @@ onUnmounted(() => {
     }
   }
 
-  .review-item {
-    min-width: 100%;
-    max-width: 100%;
-    padding: 15px;
+  .testimonials_list_item {
+    min-width: 220px;
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonials_container {
+    padding: 5px;
   }
 
-  .scroll-button {
-    padding: 6px 10px;
-    font-size: 14px;
+  .testimonials {
+    &_list {
+      width: 100%;
+      &_item {
+        min-width: 100%;
+        max-width: 100%;
+        padding: 10px;
+      }
+    }
   }
 }
 </style>

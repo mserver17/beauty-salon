@@ -121,6 +121,7 @@ function showAlert(type, message) {
     flex-direction: column;
     gap: 1rem;
     max-width: 400px;
+    padding: 20px;
 
     input {
       width: 100%;

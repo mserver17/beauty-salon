@@ -5,15 +5,18 @@
       Выберите удобный способ связи. Наши операторы проведут первичную
       консультацию по услугам и запишут вас к специалистам:
     </p>
-    <p>Для быстрой записи звоните: <span>+7 917 814 98 41</span></p>
+    <p>
+      Для быстрой записи звоните: <br />
+      334 <span>+7 917 814 98 41</span>
+    </p>
     <div class="bnt_wrapper">
       <MyButton>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           x="0px"
           y="0px"
-          width="30"
-          height="30"
+          width="25"
+          height="25"
           viewBox="0 0 48 48"
         >
           <path
@@ -71,10 +74,12 @@ import MyButton from "../ui/MyButton.vue";
     justify-content: space-evenly;
 
     button {
-      background-color: #968cff;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      border: 1px solid #8a80ff;
 
       &:hover {
-        background-color: #8a80ff;
+        background-color: #9f96ff41;
       }
 
       span,
@@ -82,6 +87,21 @@ import MyButton from "../ui/MyButton.vue";
       svg {
         margin-right: 10px;
       }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .quick_booking {
+    margin: 30px auto;
+    width: 100%;
+  }
+  .bnt_wrapper {
+    flex-direction: column;
+    gap: 20px;
+
+    button {
+      width: 100%;
     }
   }
 }

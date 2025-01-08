@@ -42,7 +42,9 @@
       ]"
       @close="dialogVisible = false"
     />
-    <button class="back-button" @click="goBack">Назад</button>
+    <button class="back-button" @click="goBack">Назад</button><br />
+    <hr />
+    <button class="print-button" @click="printPage">Печать</button>
   </div>
   <p v-else class="loading">Загрузка...</p>
 </template>
@@ -79,7 +81,7 @@ const fetchServiceFromFirebase = async (id) => {
 
 const openModal = (subservice) => {
   dialogTitle.value = subservice.name;
-  dialogMessage.value = `Описание: ${subservice.description}\nЦена: ${subservice.price} руб.`;
+  dialogMessage.value = `${subservice.description}\n Цена: ${subservice.price} руб.`;
   dialogVisible.value = true;
 };
 
@@ -98,6 +100,9 @@ watch(
     fetchServiceFromFirebase(newId);
   }
 );
+const printPage = () => {
+  window.print();
+};
 </script>
 
 <style lang="scss" scoped>
@@ -136,7 +141,7 @@ watch(
     .subservices-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      gap: 50px;
     }
 
     .subservice-card {
@@ -202,5 +207,44 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media print {
+  .service-group {
+    background-color: #fff;
+    color: #000;
+    box-shadow: none;
+    padding: 20px;
+    max-width: 100%;
+    margin: 0 auto;
+    text-align: left;
+
+    .header h1 {
+      color: #000;
+    }
+
+    .header .description {
+      color: #333;
+    }
+
+    .subservices .subservice-card {
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+    }
+
+    .back-button,
+    .subservice-btn,
+    .loading {
+      display: none;
+    }
+  }
+}
+.print-button {
+  padding: 5px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  &:hover {
+    border: 1px solid #7140ba;
+  }
 }
 </style>

@@ -12,11 +12,10 @@
 </template>
 
 <script setup>
-// import MyButton from "./MyButton.vue";
 defineProps({
   type: {
     type: String,
-    default: "success", 
+    default: "success",
   },
   message: {
     type: String,

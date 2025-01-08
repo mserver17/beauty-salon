@@ -183,7 +183,6 @@ main {
     }
   }
   main {
-    margin-top: 50px;
     transition: margin-left 0.3s ease;
     margin-left: 0px;
   }
@@ -213,8 +212,15 @@ footer {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 5;
-  display: none;
+}
+
+.overlay {
+  display: block;
+  z-index: 9;
+}
+
+.main-expanded {
+  margin-left: 0;
 }
 @media screen and (max-width: 450px) {
   header {

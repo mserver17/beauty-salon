@@ -19,31 +19,7 @@
         </div>
       </div>
     </div>
-    <section class="advantages">
-      <section class="promo">
-        <h2>Специальное предложение</h2>
-        <p>
-          Станьте нашим клиентом уже сегодня и получите
-          <strong>10% скидку</strong> на первое посещение!
-        </p>
-        <router-link to="/booking" class="promo-button">Записаться</router-link>
-      </section>
-      <h2>Почему выбирают нас?</h2>
-      <ul>
-        <li>
-          <span class="material-symbols-outlined">verified</span>
-          Сертифицированные мастера с многолетним опытом
-        </li>
-        <li>
-          <span class="material-symbols-outlined">spa</span>
-          Используем только проверенную косметику премиум-класса
-        </li>
-        <li>
-          <span class="material-symbols-outlined">schedule</span>
-          Удобное онлайн-бронирование в любое время
-        </li>
-      </ul>
-    </section>
+    <Advantages />
     <PopularServices :services="filteredServices" @book-service="bookService" />
     <ImageSlider :images="sliderImages" />
     <Testimonials :testimonials="testimonials" />
@@ -62,15 +38,9 @@ import Testimonials from "../components/mainpageComponents/Testimonials.vue";
 import PopularServices from "../components/mainpageComponents/PopularServices.vue";
 import Location from "../components/mainpageComponents/Location.vue";
 import Feedback from "../components/mainpageComponents/Feedback.vue";
-const sliderImages = ref([
-  "/img/slider-2.jpg",
-  "https://novosibirsk.bonodono.ru/upload/iblock/638/yg38k6m60vone5joiecsjnbtvi7oexqw.jpg",
-  // "/img/p2.jpg",
+import Advantages from "../components/mainpageComponents/Advantages.vue";
 
-  // "https://avatars.mds.yandex.net/get-altay/903198/2a000001617086ebd180ca672e98c184d7ff/orig",
-  // "https://novosibirsk.bonodono.ru/upload/iblock/638/yg38k6m60vone5joiecsjnbtvi7oexqw.jpg",
-  // "https://i.pinimg.com/736x/d1/da/71/d1da717eab874846abb9ffa5e116688c.jpg",
-]);
+const sliderImages = ref(["/img/slider-2.jpg", "/img/slider-3.jpg"]);
 const services = ref([]);
 const searchQuery = ref("");
 const testimonials = ref([]);
@@ -84,8 +54,6 @@ const filteredServices = computed(() => {
 });
 onMounted(async () => {
   const database = getDatabase();
-
-  // Загрузка списка услуг
   const servicesRef = dbRef(database, "services");
   const servicesSnapshot = await get(servicesRef);
   const testimonialsRef = dbRef(database, "testimonials");
@@ -200,67 +168,29 @@ function bookService(serviceId) {
       }
     }
   }
-
-  .advantages {
-    max-width: 1000px;
-    margin: 40px auto;
-    text-align: center;
-    padding: 20px;
-    background: var(--section-bg-color);
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-
-    .promo {
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      padding: 20px;
-      p {
-        font-size: 1.2rem;
-        color: var(--font-color);
-        margin-bottom: 20px;
-      }
-      &-button {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: var(--button-bg-color);
-        color: #fff;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-
-        :hover {
-          background-color: var(--button-hover-color);
-        }
-      }
-    }
-    h2 {
-      font-size: 1.8rem;
-      color: var(--font-color);
-      margin-bottom: 20px;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-
-      li {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 15px;
-        font-size: 1.1rem;
-
-        span {
-          font-size: 1.5rem;
-          color: var(--button-bg-color);
-        }
-      }
-    }
-  }
 }
 section {
   max-width: 1000px;
   margin: 0 auto;
   margin-bottom: 40px;
   background-color: var(--section-bg-color);
+}
+@media (max-width: 480px) {
+  .home {
+    .image__container {
+      height: 100vh;
+      .image__underflow {
+        &_text {
+          .hero-title {
+            font-size: 30px;
+            margin-bottom: 40px;
+          }
+          .hero-subtitle {
+            font-size: 19px;
+          }
+        }
+      }
+    }
+  }
 }
 </style>

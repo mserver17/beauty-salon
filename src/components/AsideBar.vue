@@ -1,4 +1,3 @@
-<!-- AsideBar.vue -->
 <template>
   <aside :class="['sidebar', { closed: !isSidebarOpen }]" ref="sidebar">
     <nav>

@@ -9,8 +9,7 @@
     </div>
 
     <ul v-else class="records__list">
-    <h2>Мои записи</h2>
-
+      <h2>Мои записи</h2>
       <li
         v-for="booking in userBookings"
         :key="booking.id"
@@ -25,24 +24,24 @@
             <span>Дата</span>
             <p>{{ booking.date }}</p>
           </div>
-          <div class="records__list__item__content__field">
+          <div class="records__list__item__content__field rg">
             <span>Время</span>
-            <p>{{ booking.time }}</p>
+            <p class="time">{{ booking.time }}</p>
           </div>
-          <div class="records__list__item__content__field">
+          <div class="records__list__item__content__field rg">
             <span>Мастер</span>
-            <p>{{ booking.master }}</p>
+            <p class="master">{{ booking.master }}</p>
           </div>
         </div>
         <div class="records__list__item__actions">
           <span
-      v-if="booking.isUpdated"
-      class="updated-symbol"
-      title="Запись перенесена"
-    >
-      ⟲
-    </span>
- 
+            v-if="booking.isUpdated"
+            class="updated-symbol"
+            title="Запись перенесена"
+          >
+            ⟲
+          </span>
+
           <MyButton
             @click="openRescheduleModal(booking)"
             class="records__list__item__button"
@@ -112,11 +111,11 @@
       @close="closeDeleteModal"
     />
     <CustomAlert
-    v-if="customAlertVisible"
-    :message="customAlertMessage"
-    :type="customAlertType"
-    @close="customAlertVisible = false"
-  />
+      v-if="customAlertVisible"
+      :message="customAlertMessage"
+      :type="customAlertType"
+      @close="customAlertVisible = false"
+    />
   </section>
 </template>
 
@@ -131,7 +130,7 @@ import CustomAlert from "../ui/CustomAlert.vue";
 
 const store = useStore();
 const userBookings = computed(() => store.getters["bookings/userBookings"]);
-const loading = ref(true); 
+const loading = ref(true);
 const showDeleteModal = ref(false);
 const bookingToDeleteId = ref(null);
 
@@ -146,7 +145,7 @@ const customAlertType = ref("success");
 
 onMounted(() => {
   store.dispatch("bookings/loadBookings").finally(() => {
-    loading.value = false; 
+    loading.value = false;
   });
 });
 
@@ -156,7 +155,7 @@ function showCustomAlert(message, type = "success") {
   customAlertVisible.value = true;
   setTimeout(() => {
     customAlertVisible.value = false;
-  }, 5000); 
+  }, 5000);
 }
 
 function openRescheduleModal(booking) {
@@ -186,7 +185,10 @@ function confirmReschedule() {
     newDate.value === bookingToReschedule.value.date &&
     newTime.value === bookingToReschedule.value.time
   ) {
-    showCustomAlert("Новые данные записи совпадают с текущими. Выберите новую дату и/или время", "error");
+    showCustomAlert(
+      "Новые данные записи совпадают с текущими. Выберите новую дату и/или время",
+      "error"
+    );
     return;
   }
 
@@ -201,12 +203,14 @@ function confirmReschedule() {
     })
     .catch((error) => {
       console.error("Ошибка при переносе записи:", error.message);
-      showCustomAlert("Не удалось перенести запись. Попробуйте позже.", "error");
+      showCustomAlert(
+        "Не удалось перенести запись. Попробуйте позже.",
+        "error"
+      );
     });
 
   closeRescheduleModal();
 }
-
 
 function openDeleteModal(id) {
   console.log("Открываем модал для ID:", id);
@@ -250,6 +254,7 @@ function confirmDelete() {
     text-transform: uppercase;
     letter-spacing: 1px;
   }
+
   &__list {
     margin: 0 auto;
     padding: 20px;
@@ -268,6 +273,8 @@ function confirmDelete() {
       align-items: stretch;
       padding: 20px;
       margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+
       border-radius: 12px;
       background: linear-gradient(
         145deg,
@@ -327,14 +334,13 @@ function confirmDelete() {
 
         .updated-symbol {
           font-size: 20px;
-          color: #28a745; 
+          color: #28a745;
           margin-left: 10px;
-          cursor: help; 
+          cursor: help;
         }
         .updated-symbol:hover {
-          color: #218838; 
+          color: #218838;
         }
-
       }
 
       &__button {
@@ -410,13 +416,26 @@ function confirmDelete() {
 
       &__item {
         padding: 5px 5px 15px 5px;
+        border: 2px solid var(--border-color);
 
-      &__content{
-        &__field{
-          margin-left: 5px;
-
+        &__content {
+          padding: 20px 0px;
+          &__field {
+            margin-left: 5px;
+            &:last-child {
+              align-items: center;
+            }
+            &:nth-child(3) {
+              align-items: center;
+            }
+            &:nth-child(2) {
+              align-items: end;
+            }
+          }
         }
-      }
+        &__actions {
+          margin-top: 15px;
+        }
       }
     }
   }
