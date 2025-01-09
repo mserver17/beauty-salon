@@ -9,8 +9,8 @@
             class="footer-logo"
           />
           <p class="footer-description">
-            «Beauty Salon» — место, где начинается ваша красота. Мы создаём
-            стиль, уверенность и вдохновение.
+            «BELLEZZA» — место, где начинается ваша красота. Мы создаём стиль,
+            уверенность и вдохновение.
           </p>
         </div>
         <div class="footer-contact">
@@ -76,7 +76,7 @@ footer {
   align-items: center;
   justify-content: center;
   transition: margin-left 0.3s ease;
-  margin-left: 100px;
+  margin-left: 220px;
 
   .footer-container {
     display: flex;
@@ -152,6 +152,7 @@ footer {
       }
 
       .footer-subscribe {
+        min-width: 400px;
         form {
           display: flex;
           gap: 10px;
@@ -159,8 +160,15 @@ footer {
           input {
             flex: 1;
             padding: 10px;
-            border: none;
+            border: 1px solid #383838;
             border-radius: 4px;
+            background-color: #282828;
+            outline: none;
+
+            &:focus {
+              border-color: var(--primary-color, #9055ef);
+              box-shadow: 0 0 5px rgba(208, 186, 255, 0.5);
+            }
           }
 
           button {

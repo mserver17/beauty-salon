@@ -1,8 +1,13 @@
 <template>
   <div class="service-group" v-if="service">
     <div class="header">
-      <h1>{{ service.name }}</h1>
-      <p class="description">{{ service.description }}</p>
+      <div class="header_info">
+        <h1>{{ service.name }}</h1>
+        <p class="description">{{ service.description }}</p>
+      </div>
+      <button class="print-button" @click="printPage">
+        <span class="material-symbols-outlined"> print </span>
+      </button>
     </div>
 
     <div class="subservices">
@@ -44,7 +49,6 @@
     />
     <button class="back-button" @click="goBack">Назад</button><br />
     <hr />
-    <button class="print-button" @click="printPage">Печать</button>
   </div>
   <p v-else class="loading">Загрузка...</p>
 </template>
@@ -118,16 +122,32 @@ const printPage = () => {
 
   .header {
     margin-bottom: 30px;
+    display: flex;
+    &_info {
+      flex: 2;
+      h1 {
+        font-size: 2rem;
+        color: var(--primary-color);
+      }
 
-    h1 {
-      font-size: 2rem;
-      color: var(--primary-color);
+      .description {
+        font-size: 1rem;
+        color: var(--text-color-secondary);
+        margin-top: 10px;
+      }
     }
-
-    .description {
-      font-size: 1rem;
-      color: var(--text-color-secondary);
-      margin-top: 10px;
+    .print-button {
+      flex: 0.1;
+      height: 40px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      &:hover {
+        border-color: #8c58da;
+        box-shadow: 0 0 5px rgba(104, 34, 255, 0.5);
+      }
+      span {
+        font-size: 1.8rem;
+      }
     }
   }
 
@@ -237,14 +257,6 @@ const printPage = () => {
     .loading {
       display: none;
     }
-  }
-}
-.print-button {
-  padding: 5px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  &:hover {
-    border: 1px solid #7140ba;
   }
 }
 </style>

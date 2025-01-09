@@ -53,7 +53,15 @@
             @click="openDeleteModal(booking.id)"
             class="records__list__item__button"
           >
-            Отменить запись
+            Отменить
+          </MyButton>
+
+          <MyButton
+            v-if="booking.status !== 'completed'"
+            @click="openCompleteModal(booking)"
+            class="records__list__item__button btn-complete"
+          >
+            Завершить
           </MyButton>
         </div>
       </li>
@@ -110,6 +118,25 @@
       ]"
       @close="closeDeleteModal"
     />
+    <DinamicDialog
+      v-if="showCompleteModal"
+      :visible="showCompleteModal"
+      title="Вы уверены, что хотите завершить запись?"
+      :message="'Это действие подтвердит выполнение услуги.'"
+      :buttons="[
+        {
+          label: 'Завершить',
+          class: 'btn-primary',
+          handler: confirmComplete,
+        },
+        {
+          label: 'Отмена',
+          class: 'btn-secondary',
+          handler: closeCompleteModal,
+        },
+      ]"
+      @close="closeCompleteModal"
+    />
     <CustomAlert
       v-if="customAlertVisible"
       :message="customAlertMessage"
@@ -131,6 +158,7 @@ import CustomAlert from "../ui/CustomAlert.vue";
 const store = useStore();
 const userBookings = computed(() => store.getters["bookings/userBookings"]);
 const loading = ref(true);
+
 const showDeleteModal = ref(false);
 const bookingToDeleteId = ref(null);
 
@@ -138,6 +166,9 @@ const showRescheduleModal = ref(false);
 const bookingToReschedule = ref(null);
 const newDate = ref("");
 const newTime = ref("");
+
+const showCompleteModal = ref(false);
+const bookingToComplete = ref(null);
 
 const customAlertVisible = ref(false);
 const customAlertMessage = ref("");
@@ -148,6 +179,38 @@ onMounted(() => {
     loading.value = false;
   });
 });
+function openCompleteModal(booking) {
+  bookingToComplete.value = booking;
+  showCompleteModal.value = true;
+}
+
+function closeCompleteModal() {
+  showCompleteModal.value = false;
+  bookingToComplete.value = null;
+}
+
+function confirmComplete() {
+  if (!bookingToComplete.value) {
+    console.error("Ошибка: не выбран объект записи для завершения");
+    return;
+  }
+
+  store
+    .dispatch("bookings/completeBooking", bookingToComplete.value.id)
+    .then(() => {
+      showCustomAlert("Запись завершена!");
+      store.dispatch("bookings/loadBookings");
+    })
+    .catch((error) => {
+      console.error("Ошибка при завершении записи:", error.message);
+      showCustomAlert(
+        "Не удалось завершить запись. Попробуйте позже.",
+        "error"
+      );
+    });
+
+  closeCompleteModal();
+}
 
 function showCustomAlert(message, type = "success") {
   customAlertMessage.value = message;
@@ -197,6 +260,7 @@ function confirmReschedule() {
       id: bookingToReschedule.value.id,
       newDate: newDate.value,
       newTime: newTime.value,
+      newStatus: bookingToReschedule.value.status,
     })
     .then(() => {
       showCustomAlert("Запись успешно перенесена!");
@@ -213,7 +277,6 @@ function confirmReschedule() {
 }
 
 function openDeleteModal(id) {
-  console.log("Открываем модал для ID:", id);
   bookingToDeleteId.value = id;
   showDeleteModal.value = true;
 }
@@ -222,8 +285,15 @@ function closeDeleteModal() {
   showDeleteModal.value = false;
 }
 function confirmDelete() {
-  console.log("Удаляем запись с ID:", bookingToDeleteId.value);
-  store.dispatch("bookings/deleteBooking", bookingToDeleteId.value);
+  store
+    .dispatch("bookings/cancelBooking", bookingToDeleteId.value)
+    .then(() => {
+      showCustomAlert("Запись отменена!", "error");
+    })
+    .catch((error) => {
+      console.error("Ошибка при отмене записи:", error.message);
+      showCustomAlert("Не удалось отменить запись. Попробуйте позже.", "error");
+    });
   closeDeleteModal();
 }
 </script>
@@ -329,6 +399,7 @@ function confirmDelete() {
 
       &__actions {
         display: flex;
+        align-items: center;
         justify-content: flex-end;
         gap: 10px;
 
