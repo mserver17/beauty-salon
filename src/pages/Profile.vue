@@ -149,14 +149,13 @@ function onAfterLeave() {
   display: flex;
   user-select: none;
   padding: 20px 20px 20px 50px;
-  // align-items: center;
   flex-direction: row;
   margin: 3% auto;
   transition: all 0.5s ease;
   width: 100%;
 
   .profile {
-    // min-width: 400px;
+    min-width: 400px;
     text-align: center;
     max-width: 500px;
     max-height: fit-content;
@@ -262,7 +261,7 @@ function onAfterLeave() {
 }
 @media screen and (max-width: 1068px) {
   .ProfileContainer {
-    flex-direction: column;
+    display: block;
     align-items: center;
     padding: 10px;
 

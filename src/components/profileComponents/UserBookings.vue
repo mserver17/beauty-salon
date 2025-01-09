@@ -307,7 +307,7 @@ function confirmDelete() {
   margin-left: 20px;
   padding: 20px;
   width: 100%;
-
+  max-width: 600px;
   &__empty {
     .link {
       display: inline-block;

@@ -9,7 +9,7 @@
           <div class="table-cell">Услуга</div>
           <div class="table-cell">Мастер</div>
           <div class="table-cell">Статус</div>
-          <div class="table-cell">Действия</div>
+          <div class="table-cell">Действиe</div>
         </div>
         <div
           class="table-row"
