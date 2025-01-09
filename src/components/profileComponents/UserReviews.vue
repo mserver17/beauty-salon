@@ -96,9 +96,7 @@ import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import MyButton from "../ui/MyButton.vue";
 import { reactive } from "vue";
-import MyInput from "../ui/MyInput.vue";
 import DinamicDialog from "../ui/DynamicDialog.vue";
-// import { firebaseDatabase } from "../firebaseConfig";
 import { get, ref as dbRef, getDatabase } from "firebase/database";
 
 const store = useStore();
@@ -176,7 +174,8 @@ const sortedReviews = computed(() => {
   background-color: var(--sidebar-bg-color);
   margin-left: 20px;
   padding: 20px;
-  width: 420px;
+  width: 100%;
+  max-width: 600px;
 
   .toggle-btn {
     margin: 40px 0 40px;
@@ -259,13 +258,14 @@ const sortedReviews = computed(() => {
     display: flex;
     width: 100%;
     align-items: center;
+    justify-content: center;
     margin: 20px 0 40px;
     .reviews__sort__label {
-      margin-right: 0px;
-      flex: 1;
+      flex: 0.4;
+      margin-right: 30px;
     }
     .reviews__sort__selector {
-      flex: 1;
+      flex: 0;
       padding: 5px 7px;
       border: 1px solid var(--button-hover-color);
       border-radius: 7px;

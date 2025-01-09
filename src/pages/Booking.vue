@@ -1,4 +1,3 @@
-<!-- Booking.vue -->
 <template>
   <div class="booking">
     <ul class="recording_options">
@@ -33,7 +32,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import OnlineBookingForm from "../components/bookingComponents/OnlineBookingForm.vue";
-// import MyButton from "../components/ui/MyButton.vue";
 import QuickBooking from "../components/bookingComponents/QuickBooking.vue";
 import ScheduleMasters from "../components/bookingComponents/ScheduleMasters.vue";
 
@@ -111,7 +109,6 @@ onMounted(async () => {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  // Адаптивность
   @media (max-width: 768px) {
     .recording_options {
       li:nth-child(3) {

@@ -131,11 +131,13 @@ const formatDate = (date) => {
 
   .visit-history-table {
     width: 100%;
-    display: flex;
-    flex-direction: column;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border: 1px solid #ddd;
     border-radius: 8px;
-    overflow: hidden;
+    margin-top: 20px;
+    max-width: 100%;
 
     .table-header,
     .table-row {
@@ -163,6 +165,7 @@ const formatDate = (date) => {
       border-radius: 4px;
       font-weight: bold;
     }
+
     .table-cell button {
       padding: 2px 0px;
       border-radius: 4px;
@@ -196,11 +199,13 @@ const formatDate = (date) => {
       width: 100%;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      white-space: nowrap;
     }
 
     .table-header,
     .table-row {
-      width: 100%;
+      display: inline-block;
+      min-width: 600px;
       padding: 10px;
       border-bottom: 1px solid #ddd;
     }
@@ -208,14 +213,13 @@ const formatDate = (date) => {
     .table-header {
       background-color: var(--border-color);
       font-weight: bold;
-      display: none;
+      display: block;
     }
 
     .table-row {
       display: flex;
       flex-direction: column;
       margin-bottom: 10px;
-      background-color: #f9f9f9;
       border-radius: 8px;
       padding: 12px;
     }

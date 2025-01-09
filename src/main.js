@@ -29,7 +29,6 @@ const auth = getAuth();
 onAuthStateChanged(auth, (user) => {
   if (user) {
     // console.log("User logged in:", user);
-
     store.commit("auth/setUser", {
       id: user.uid,
       name: user.displayName || "No name",
@@ -37,8 +36,6 @@ onAuthStateChanged(auth, (user) => {
     });
     store.commit("auth/setAuthenticated", true);
   } else {
-    console.log("No user logged in");
-
     store.commit("auth/setUser", null);
     store.commit("auth/setAuthenticated", false);
   }

@@ -53,8 +53,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© 2025 BELLEZA. Все права защищены.</p>
-        <a href="/privacy-policy">Политика конфиденциальности</a>
+        <p>© 2025 BELLEZA.</p>
       </div>
     </div>
   </footer>
@@ -270,10 +269,17 @@ footer {
       font-size: 25px;
     }
 
-    .footer-subscribe input,
-    .footer-subscribe button {
-      font-size: 14px;
-      padding: 8px;
+    .footer-subscribe {
+      form {
+        align-items: center;
+        input,
+        button {
+          width: 300px;
+
+          font-size: 14px;
+          padding: 8px;
+        }
+      }
     }
   }
 }

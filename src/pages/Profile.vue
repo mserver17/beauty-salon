@@ -123,11 +123,9 @@ const uploadPhoto = (event) => {
 };
 
 function openLogoutModal() {
-  console.log("Попытка выхода");
   showLogoutModal.value = true;
 }
 function closeLogoutModal() {
-  console.log("Передумал(а) выходить");
   showLogoutModal.value = false;
 }
 
@@ -155,9 +153,10 @@ function onAfterLeave() {
   flex-direction: row;
   margin: 3% auto;
   transition: all 0.5s ease;
+  width: 100%;
 
   .profile {
-    min-width: 400px;
+    // min-width: 400px;
     text-align: center;
     max-width: 500px;
     max-height: fit-content;
@@ -261,10 +260,19 @@ function onAfterLeave() {
   opacity: 0;
   transform: translateX(-20px);
 }
-
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1068px) {
   .ProfileContainer {
     flex-direction: column;
+    align-items: center;
+    padding: 10px;
+
+    .profile {
+      margin-bottom: 30px;
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  .ProfileContainer {
     padding: 10px;
 
     .profile {

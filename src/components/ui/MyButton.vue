@@ -58,8 +58,8 @@ const handleClick = (event) => {
 }
 
 .custom-button.small {
-  padding: 5px 10px;
-  font-size: 12px;
+  padding: 6px 12px;
+  font-size: 14px;
 }
 
 .custom-button.medium {

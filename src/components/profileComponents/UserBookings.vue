@@ -43,13 +43,15 @@
           </span>
 
           <MyButton
+            size="small"
             @click="openRescheduleModal(booking)"
             class="records__list__item__button"
           >
-            Перенести запись
+            Перенести
           </MyButton>
 
           <MyButton
+            size="small"
             @click="openDeleteModal(booking.id)"
             class="records__list__item__button"
           >
@@ -57,6 +59,7 @@
           </MyButton>
 
           <MyButton
+            size="small"
             v-if="booking.status !== 'completed'"
             @click="openCompleteModal(booking)"
             class="records__list__item__button btn-complete"
@@ -299,9 +302,11 @@ function confirmDelete() {
 </script>
 <style lang="scss" scoped>
 .records {
-  margin-left: 40px;
-  text-align: center;
-  width: 40%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  margin-left: 20px;
+  padding: 20px;
+  width: 100%;
 
   &__empty {
     .link {
@@ -327,14 +332,13 @@ function confirmDelete() {
 
   &__list {
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px;
     width: 100%;
     max-width: 800px;
     min-width: 500px;
     list-style: none;
     // background-color: var(--section-bg-color);
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
     &__item {
       display: flex;
@@ -480,6 +484,7 @@ function confirmDelete() {
   .records {
     width: 100%;
     margin-left: 0;
+    padding: 5px;
     &__list {
       min-width: 350px;
       max-width: 450px;
@@ -506,6 +511,10 @@ function confirmDelete() {
         }
         &__actions {
           margin-top: 15px;
+
+          button {
+            padding: 4px 0px;
+          }
         }
       }
     }

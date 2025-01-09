@@ -10,7 +10,7 @@
         required
       />
       <MyInput
-        id="username"
+        id="email"
         label="Введите почту"
         v-model="contactForm.email"
         placeholder="example@gmail.com"
@@ -28,12 +28,33 @@
       </div>
       <MyButton type="submit">Отправить</MyButton>
     </form>
+    <DynamicDialog
+      v-if="showAuthModal"
+      :visible="showAuthModal"
+      title="Требуется авторизация"
+      message="Для отправки обращения необходимо войти в систему."
+      :buttons="modalButtons"
+    />
+    <CustomAlert
+      v-if="alertVisible"
+      :message="alertMessage"
+      :type="alertType"
+      @close="alertVisible = false"
+    />
   </section>
 </template>
+
 <script setup>
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import MyButton from "../ui/MyButton.vue";
 import MyInput from "../ui/MyInput.vue";
-import { ref } from "vue";
+import CustomAlert from "../ui/CustomAlert.vue";
+import DynamicDialog from "../ui/DynamicDialog.vue";
+
+const router = useRouter();
+const store = useStore();
 
 const contactForm = ref({
   name: "",
@@ -41,11 +62,55 @@ const contactForm = ref({
   message: "",
 });
 
-const submitContactForm = () => {
-  console.log(contactForm.value);
-  contactForm.value = { name: "", email: "", message: "" };
+const alertVisible = ref(false);
+const alertMessage = ref("");
+const alertType = ref("success");
+
+const showAuthModal = ref(false); //
+const modalButtons = ref([
+  {
+    label: "Авторизоваться",
+    class: "btn-primary",
+    handler: () => {
+      router.push("/auth");
+    },
+  },
+  {
+    label: "Закрыть",
+    class: "btn-secondary",
+    handler: () => {
+      showAuthModal.value = false;
+    },
+  },
+]);
+
+const submitContactForm = async () => {
+  try {
+    const isAuthenticated = store.state.auth.isAuthenticated;
+    if (!isAuthenticated) {
+      showAuthModal.value = true;
+      return;
+    }
+    await store.dispatch("feedback/sendContactForm", contactForm.value);
+
+    alertMessage.value = "Обращение успешно отправлено!";
+    alertType.value = "success";
+    alertVisible.value = true;
+
+    contactForm.value = { name: "", email: "", message: "" };
+  } catch (error) {
+    if (error.code === "PERMISSION_DENIED") {
+      showAuthModal.value = true;
+    } else {
+      alertMessage.value =
+        "Ошибка отправки обращения. Пожалуйста, попробуйте снова.";
+      alertType.value = "error";
+      alertVisible.value = true;
+    }
+  }
 };
 </script>
+
 <style scoped lang="scss">
 .feedback {
   display: flex;
