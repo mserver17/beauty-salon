@@ -124,7 +124,7 @@ function bookService(serviceId) {
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.627);
-        z-index: 1;
+        z-index: 0;
       }
       &_text {
         z-index: 2;
@@ -178,8 +178,10 @@ section {
 @media (max-width: 480px) {
   .home {
     .image__container {
-      height: 100vh;
+      height: 80vh;
       .image__underflow {
+        background-attachment: scroll;
+        will-change: transform;
         &_text {
           .hero-title {
             font-size: 30px;
